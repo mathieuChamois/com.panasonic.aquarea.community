@@ -45,6 +45,364 @@
     "large": "/assets/images/large.jpg",
     "xlarge": "/assets/images/xlarge.jpg"
   },
+  "capabilities": {
+    "measure_water_temperature": {
+      "type": "number",
+      "title": {
+        "en": "Water temperature",
+        "fr": "Temperature d'eau"
+      },
+      "units": {
+        "en": "°C",
+        "fr": "°C"
+      },
+      "decimals": 1,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/capabilities/water_temperature.svg"
+    },
+    "measure_water_pressure": {
+      "type": "number",
+      "title": {
+        "en": "Water pressure",
+        "fr": "Pression d'eau"
+      },
+      "units": {
+        "en": "bar",
+        "fr": "bar"
+      },
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/capabilities/water_pressure.svg"
+    },
+    "pump_running": {
+      "type": "boolean",
+      "title": {
+        "en": "Circulation pump",
+        "fr": "Circulateur"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Circulation pump running",
+        "fr": "Circulateur en marche"
+      },
+      "insightsTitleFalse": {
+        "en": "Circulation pump stopped",
+        "fr": "Circulateur arrete"
+      },
+      "icon": "/assets/capabilities/pump_running.svg"
+    },
+    "defrost_active": {
+      "type": "boolean",
+      "title": {
+        "en": "Defrosting",
+        "fr": "Degivrage"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Defrost started",
+        "fr": "Degivrage demarre"
+      },
+      "insightsTitleFalse": {
+        "en": "Defrost ended",
+        "fr": "Degivrage termine"
+      },
+      "icon": "/assets/capabilities/defrost.svg"
+    },
+    "quiet_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Quiet mode",
+        "fr": "Mode silencieux"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": false,
+      "icon": "/assets/capabilities/quiet_mode.svg",
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "fr": "Arret"
+          }
+        },
+        {
+          "id": "level1",
+          "title": {
+            "en": "Level 1",
+            "fr": "Niveau 1"
+          }
+        },
+        {
+          "id": "level2",
+          "title": {
+            "en": "Level 2",
+            "fr": "Niveau 2"
+          }
+        },
+        {
+          "id": "level3",
+          "title": {
+            "en": "Level 3",
+            "fr": "Niveau 3"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown",
+            "fr": "Inconnu"
+          }
+        }
+      ]
+    },
+    "powerful_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Powerful mode",
+        "fr": "Mode puissant"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": false,
+      "icon": "/assets/capabilities/powerful_mode.svg",
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "fr": "Arret"
+          }
+        },
+        {
+          "id": "30min",
+          "title": {
+            "en": "30 minutes",
+            "fr": "30 minutes"
+          }
+        },
+        {
+          "id": "60min",
+          "title": {
+            "en": "60 minutes",
+            "fr": "60 minutes"
+          }
+        },
+        {
+          "id": "90min",
+          "title": {
+            "en": "90 minutes",
+            "fr": "90 minutes"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown",
+            "fr": "Inconnu"
+          }
+        }
+      ]
+    },
+    "holiday_mode": {
+      "type": "boolean",
+      "title": {
+        "en": "Holiday mode",
+        "fr": "Mode vacances"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Holiday mode on",
+        "fr": "Mode vacances actif"
+      },
+      "insightsTitleFalse": {
+        "en": "Holiday mode off",
+        "fr": "Mode vacances inactif"
+      },
+      "icon": "/assets/capabilities/holiday_mode.svg"
+    },
+    "force_dhw": {
+      "type": "boolean",
+      "title": {
+        "en": "Forced hot water",
+        "fr": "Eau chaude forcee"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Forced hot water on",
+        "fr": "Eau chaude forcee active"
+      },
+      "insightsTitleFalse": {
+        "en": "Forced hot water off",
+        "fr": "Eau chaude forcee inactive"
+      },
+      "icon": "/assets/capabilities/force_dhw.svg"
+    },
+    "force_heater": {
+      "type": "boolean",
+      "title": {
+        "en": "Backup heater",
+        "fr": "Appoint electrique"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Backup heater on",
+        "fr": "Appoint electrique actif"
+      },
+      "insightsTitleFalse": {
+        "en": "Backup heater off",
+        "fr": "Appoint electrique inactif"
+      },
+      "icon": "/assets/capabilities/force_heater.svg"
+    },
+    "bivalent_active": {
+      "type": "boolean",
+      "title": {
+        "en": "Bivalent source active",
+        "fr": "Source bivalente active"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Bivalent source on",
+        "fr": "Source bivalente active"
+      },
+      "insightsTitleFalse": {
+        "en": "Bivalent source off",
+        "fr": "Source bivalente inactive"
+      },
+      "icon": "/assets/capabilities/bivalent.svg"
+    },
+    "electric_anode": {
+      "type": "boolean",
+      "title": {
+        "en": "Electric anode",
+        "fr": "Anode electrique"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Electric anode on",
+        "fr": "Anode electrique active"
+      },
+      "insightsTitleFalse": {
+        "en": "Electric anode off",
+        "fr": "Anode electrique inactive"
+      },
+      "icon": "/assets/capabilities/electric_anode.svg"
+    },
+    "special_status": {
+      "type": "enum",
+      "title": {
+        "en": "Eco / Comfort preset",
+        "fr": "Prereglage Eco / Confort"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": false,
+      "icon": "/assets/capabilities/special_status.svg",
+      "values": [
+        {
+          "id": "normal",
+          "title": {
+            "en": "Normal",
+            "fr": "Normal"
+          }
+        },
+        {
+          "id": "eco",
+          "title": {
+            "en": "Eco",
+            "fr": "Eco"
+          }
+        },
+        {
+          "id": "comfort",
+          "title": {
+            "en": "Comfort",
+            "fr": "Confort"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown",
+            "fr": "Inconnu"
+          }
+        }
+      ]
+    },
+    "operation_direction": {
+      "type": "enum",
+      "title": {
+        "en": "Current operation",
+        "fr": "Fonctionnement en cours"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": false,
+      "icon": "/assets/capabilities/direction.svg",
+      "values": [
+        {
+          "id": "idle",
+          "title": {
+            "en": "Idle",
+            "fr": "Au repos"
+          }
+        },
+        {
+          "id": "pump",
+          "title": {
+            "en": "Heating / cooling",
+            "fr": "Chauffage / rafraichissement"
+          }
+        },
+        {
+          "id": "water",
+          "title": {
+            "en": "Hot water",
+            "fr": "Eau chaude"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown",
+            "fr": "Inconnu"
+          }
+        }
+      ]
+    }
+  },
   "drivers": [
     {
       "id": "aquarea_heatpump",
@@ -61,7 +419,18 @@
         "onoff.zone",
         "measure_temperature",
         "measure_temperature.zone",
-        "measure_temperature.outdoor"
+        "measure_temperature.outdoor",
+        "operation_direction",
+        "special_status",
+        "quiet_mode",
+        "powerful_mode",
+        "defrost_active",
+        "force_heater",
+        "force_dhw",
+        "electric_anode",
+        "holiday_mode",
+        "measure_water_pressure",
+        "pump_running"
       ],
       "capabilitiesOptions": {
         "onoff.tank": {
@@ -248,6 +617,139 @@
                 "en": "s",
                 "fr": "s"
               }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Installation details (read-only)",
+            "fr": "Details de l'installation (lecture seule)"
+          },
+          "children": [
+            {
+              "id": "info_service_type",
+              "type": "label",
+              "label": {
+                "en": "Service type",
+                "fr": "Type de service"
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_model_series",
+              "type": "label",
+              "label": {
+                "en": "Model series",
+                "fr": "Serie du modele"
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_zones",
+              "type": "label",
+              "label": {
+                "en": "Heating zones",
+                "fr": "Zones de chauffage"
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_zone_control",
+              "type": "label",
+              "label": {
+                "en": "Zone setpoint type",
+                "fr": "Type de consigne de zone"
+              },
+              "hint": {
+                "en": "Whether the zone setpoint is an absolute water temperature or an offset applied to the weather-compensation curve.",
+                "fr": "Indique si la consigne de zone est une temperature d'eau absolue ou un decalage applique a la loi d'eau."
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_zone_sensor",
+              "type": "label",
+              "label": {
+                "en": "Zone sensor",
+                "fr": "Sonde de zone"
+              },
+              "hint": {
+                "en": "Which sensor drives the zone. With 'Water temperature' the heat pump reports the circuit water temperature, not a room temperature.",
+                "fr": "Sonde qui pilote la zone. Avec 'Temperature d'eau', la pompe a chaleur remonte la temperature d'eau du circuit et non une temperature ambiante."
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_cool_mode",
+              "type": "label",
+              "label": {
+                "en": "Cool mode code",
+                "fr": "Code mode froid"
+              },
+              "hint": {
+                "en": "Raw coolMode value reported by the heat pump. Panasonic does not document its meaning, so it is shown unmodified rather than guessed at.",
+                "fr": "Valeur brute coolMode remontee par la pompe a chaleur. Sa signification n'est pas documentee par Panasonic : elle est affichee telle quelle plutot que devinee."
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_tank",
+              "type": "label",
+              "label": {
+                "en": "Domestic hot water tank",
+                "fr": "Ballon d'eau chaude sanitaire"
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_bivalent",
+              "type": "label",
+              "label": {
+                "en": "Bivalent source",
+                "fr": "Source bivalente"
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_external_heater",
+              "type": "label",
+              "label": {
+                "en": "External heater",
+                "fr": "Appoint externe"
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_control_box",
+              "type": "label",
+              "label": {
+                "en": "Control box",
+                "fr": "Boitier de commande"
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_eco_comfort",
+              "type": "label",
+              "label": {
+                "en": "Eco / Comfort offsets",
+                "fr": "Decalages Eco / Confort"
+              },
+              "hint": {
+                "en": "Zone offsets configured on the heat pump for the Eco and Comfort presets (heat / cool).",
+                "fr": "Decalages de zone configures sur la pompe a chaleur pour les prereglages Eco et Confort (chaud / froid)."
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_last_update",
+              "type": "label",
+              "label": {
+                "en": "Last cloud update",
+                "fr": "Dernier rafraichissement cloud"
+              },
+              "value": "-"
             }
           ]
         },

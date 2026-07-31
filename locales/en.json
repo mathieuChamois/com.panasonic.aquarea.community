@@ -2,5 +2,25 @@
   "error": {
     "missing_credentials": "Missing credentials. Please remove and re-pair the device.",
     "connection_failed": "Cannot connect to Aquarea: {message}"
+  },
+  "info": {
+    "yes": "Yes",
+    "no": "No",
+    "present": "Present",
+    "absent": "Not present",
+    "supported": "Supported",
+    "not_supported": "Not supported",
+    "unknown": "Unknown",
+    "setpoint_absolute": "Absolute water temperature",
+    "setpoint_offset": "Weather-compensation curve offset",
+    "sensor_water": "Water temperature",
+    "sensor_external": "External thermostat",
+    "sensor_internal": "Internal thermostat",
+    "sensor_thermistor": "Thermistor",
+    "eco_heat": "Eco heat",
+    "eco_cool": "Eco cool",
+    "comfort_heat": "Comfort heat",
+    "comfort_cool": "Comfort cool",
+    "sensor_unknown": "Unknown"
   }
 }

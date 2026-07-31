@@ -2,5 +2,25 @@
   "error": {
     "missing_credentials": "Identifiants manquants. Supprimez et re-appairez l'appareil.",
     "connection_failed": "Connexion Aquarea impossible : {message}"
+  },
+  "info": {
+    "yes": "Oui",
+    "no": "Non",
+    "present": "Present",
+    "absent": "Absent",
+    "supported": "Disponible",
+    "not_supported": "Non disponible",
+    "unknown": "Inconnu",
+    "setpoint_absolute": "Temperature d'eau absolue",
+    "setpoint_offset": "Decalage de loi d'eau",
+    "sensor_water": "Temperature d'eau",
+    "sensor_external": "Thermostat externe",
+    "sensor_internal": "Thermostat interne",
+    "sensor_thermistor": "Thermistance",
+    "eco_heat": "Eco chaud",
+    "eco_cool": "Eco froid",
+    "comfort_heat": "Confort chaud",
+    "comfort_cool": "Confort froid",
+    "sensor_unknown": "Inconnu"
   }
 }

@@ -61,15 +61,9 @@ function show(title, obj) {
     for (const d of devices) {
       // getDeviceData renvoie un objet mappe + le champ .raw = reponse complete.
       const data = await client.getDeviceData(d.id);
-      show(`ETAT MAPPE — ${d.name} (${d.id})`, {
-        measureTemperature: data.measureTemperature,
-        targetTemperature: data.targetTemperature,
-        outdoorTemperature: data.outdoorTemperature,
-        thermostatMode: data.thermostatMode,
-        zoneId: data.zoneId,
-        hasTank: data.hasTank,
-        tankTemperature: data.tankTemperature,
-      });
+      // Tout ce que l'app remonte dans Homey, sauf la reponse brute.
+      const { raw, ...mapped } = data;
+      show(`ETAT MAPPE — ${d.name} (${d.id})`, mapped);
       show(`ETAT BRUT (reponse API complete) — ${d.name}`, data.raw);
     }
 
