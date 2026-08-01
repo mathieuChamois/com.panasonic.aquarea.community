@@ -158,6 +158,10 @@ class AquareaDevice extends Homey.Device {
     if (hasTank) caps.push('force_dhw', 'electric_anode');
     if (hasBivalent) caps.push('bivalent_active');
     caps.push('holiday_mode', 'measure_water_pressure', 'pump_running');
+    caps.push('meter_power.heat', 'meter_power.cool');
+    if (hasTank) caps.push('meter_power.tank');
+    caps.push('measure_cost.heat', 'measure_cost.cool');
+    if (hasTank) caps.push('measure_cost.tank');
 
     return caps;
   }
@@ -289,6 +293,9 @@ class AquareaDevice extends Homey.Device {
       // Details d'installation (reglages en lecture seule).
       await this._updateInfoSettings(data);
 
+      // Consommation energetique du jour (endpoint separe, erreur non bloquante).
+      await this._pollConsumption();
+
       // Persiste la session rafraichie pour survivre aux redemarrages.
       await this.setStoreValue('session', this.client.exportSession());
 
@@ -301,6 +308,23 @@ class AquareaDevice extends Homey.Device {
       }
     } finally {
       this._polling = false;
+    }
+  }
+
+  async _pollConsumption() {
+    try {
+      const c = await this.client.getConsumptionToday(this.deviceId);
+      if (!c) return;
+      await this._setCapability('meter_power.heat', c.heatKwh);
+      await this._setCapability('meter_power.cool', c.coolKwh);
+      await this._setCapability('measure_cost.heat', c.heatCost);
+      await this._setCapability('measure_cost.cool', c.coolCost);
+      if (this._layout.hasTank) {
+        await this._setCapability('meter_power.tank', c.tankKwh);
+        await this._setCapability('measure_cost.tank', c.tankCost);
+      }
+    } catch (err) {
+      this.error('Consumption poll error:', err.message);
     }
   }
 
@@ -419,6 +443,36 @@ class AquareaDevice extends Homey.Device {
     if (!layout.hasTank && layout.zoneTempCap === 'measure_temperature') {
       jobs.push(this.setCapabilityOptions('measure_temperature', {
         title: { en: 'Room temperature', fr: 'Temperature ambiante' },
+      }));
+    }
+    if (this.hasCapability('meter_power.heat')) {
+      jobs.push(this.setCapabilityOptions('meter_power.heat', {
+        title: { en: 'Heat energy today', fr: "Energie chauffage aujourd'hui" },
+      }));
+    }
+    if (this.hasCapability('meter_power.cool')) {
+      jobs.push(this.setCapabilityOptions('meter_power.cool', {
+        title: { en: 'Cool energy today', fr: "Energie climatisation aujourd'hui" },
+      }));
+    }
+    if (this.hasCapability('meter_power.tank')) {
+      jobs.push(this.setCapabilityOptions('meter_power.tank', {
+        title: { en: 'Tank energy today', fr: "Energie ballon aujourd'hui" },
+      }));
+    }
+    if (this.hasCapability('measure_cost.heat')) {
+      jobs.push(this.setCapabilityOptions('measure_cost.heat', {
+        title: { en: 'Heat cost today', fr: "Cout chauffage aujourd'hui" },
+      }));
+    }
+    if (this.hasCapability('measure_cost.cool')) {
+      jobs.push(this.setCapabilityOptions('measure_cost.cool', {
+        title: { en: 'Cool cost today', fr: "Cout climatisation aujourd'hui" },
+      }));
+    }
+    if (this.hasCapability('measure_cost.tank')) {
+      jobs.push(this.setCapabilityOptions('measure_cost.tank', {
+        title: { en: 'Tank cost today', fr: "Cout ballon aujourd'hui" },
       }));
     }
 

@@ -401,6 +401,22 @@
           }
         }
       ]
+    },
+    "measure_cost": {
+      "type": "number",
+      "title": {
+        "en": "Energy cost today",
+        "fr": "Cout energie aujourd'hui"
+      },
+      "units": {
+        "en": "€",
+        "fr": "€"
+      },
+      "decimals": 3,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true
     }
   },
   "drivers": [
