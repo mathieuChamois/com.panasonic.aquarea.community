@@ -6,6 +6,7 @@ const AquareaHomeClient = require('../../lib/AquareaHomeClient');
 // Intervalle de polling par défaut : 60 secondes.
 const DEFAULT_POLL_INTERVAL = 60;
 const MIN_POLL_INTERVAL     = 30;
+const TRANSIENT_FAILURES_BEFORE_UNAVAILABLE = 3;
 
 // Mapping operationMode int → thermostat_mode string
 const MODE_INT_TO_STR = { 0: 'auto', 1: 'heat', 2: 'cool' };
@@ -31,6 +32,7 @@ class AquareaConvectorDevice extends Homey.Device {
 
     this._client = null;
     this._pollTimer = null;
+    this._transientPollFailures = 0;
 
     // Retire les anciennes capabilities d'alarme expérimentales des appareils
     // déjà installés, sans recréer l'appareil ni affecter ses Flows.
@@ -101,6 +103,8 @@ class AquareaConvectorDevice extends Homey.Device {
 
       if (!status || Object.keys(status).length === 0) return;
 
+      this._transientPollFailures = 0;
+
       // onoff
       if (status.powerState !== undefined) {
         await this.setCapabilityValue('onoff', !!status.powerState).catch(() => {});
@@ -144,6 +148,13 @@ class AquareaConvectorDevice extends Homey.Device {
       this.setAvailable();
     } catch (err) {
       this.error('Poll error:', err.message);
+      if (this._client.isTransientNetworkError(err)) {
+        this._transientPollFailures += 1;
+        this.log(`Temporary network failure ${this._transientPollFailures}/${TRANSIENT_FAILURES_BEFORE_UNAVAILABLE}; keeping device available`);
+        if (this._transientPollFailures < TRANSIENT_FAILURES_BEFORE_UNAVAILABLE) return;
+      } else {
+        this._transientPollFailures = 0;
+      }
       this.setUnavailable(err.message).catch(() => {});
     }
   }

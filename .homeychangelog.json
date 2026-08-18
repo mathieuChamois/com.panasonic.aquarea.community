@@ -34,5 +34,8 @@
   },
   "1.1.3": {
     "en": "add Set zone setpoint / curve offset and rename flow card to Operation mode"
+  },
+  "1.1.4": {
+    "en": "allowed all device type from confort cloud and add DHW mode"
   }
 }
