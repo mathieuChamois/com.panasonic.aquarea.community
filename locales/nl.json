@@ -1,0 +1,31 @@
+{
+  "error": {
+    "missing_credentials": "Inloggegevens ontbreken. Verwijder het apparaat en koppel het opnieuw.",
+    "connection_failed": "Kan geen verbinding maken met Aquarea: {message}",
+    "no_tank": "Deze warmtepomp heeft geen warmwaterboiler.",
+    "unknown_zone": "Zone {{zone}} bestaat niet op deze warmtepomp.",
+    "no_current_setpoint": "Het huidige instelpunt is nog niet bekend; wacht op de volgende update.",
+    "relative_main_zone_only": "Een relatieve wijziging is alleen mogelijk op de hoofdzone.",
+    "no_cooling": "Deze warmtepomp ondersteunt geen koeling."
+  },
+  "info": {
+    "yes": "Ja",
+    "no": "Nee",
+    "present": "Aanwezig",
+    "absent": "Niet aanwezig",
+    "supported": "Ondersteund",
+    "not_supported": "Niet ondersteund",
+    "unknown": "Onbekend",
+    "setpoint_absolute": "Absolute watertemperatuur",
+    "setpoint_offset": "Verschuiving van de weersafhankelijke stooklijn",
+    "sensor_water": "Watertemperatuur",
+    "sensor_external": "Externe thermostaat",
+    "sensor_internal": "Interne thermostaat",
+    "sensor_thermistor": "Thermistor",
+    "eco_heat": "Eco verwarmen",
+    "eco_cool": "Eco koelen",
+    "comfort_heat": "Comfort verwarmen",
+    "comfort_cool": "Comfort koelen",
+    "sensor_unknown": "Onbekend"
+  }
+}

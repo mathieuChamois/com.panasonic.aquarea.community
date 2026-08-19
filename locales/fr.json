@@ -1,7 +1,12 @@
 {
   "error": {
     "missing_credentials": "Identifiants manquants. Supprimez et re-appairez l'appareil.",
-    "connection_failed": "Connexion Aquarea impossible : {message}"
+    "connection_failed": "Connexion Aquarea impossible : {message}",
+    "no_tank": "Cette pompe a chaleur n'a pas de ballon d'eau chaude.",
+    "unknown_zone": "La zone {{zone}} n'existe pas sur cette pompe a chaleur.",
+    "no_current_setpoint": "La consigne actuelle n'est pas encore connue ; attendez la prochaine mise a jour.",
+    "relative_main_zone_only": "Une variation relative n'est possible que sur la zone principale.",
+    "no_cooling": "Cette pompe a chaleur ne gere pas le rafraichissement."
   },
   "info": {
     "yes": "Oui",

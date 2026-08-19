@@ -1,7 +1,12 @@
 {
   "error": {
     "missing_credentials": "Missing credentials. Please remove and re-pair the device.",
-    "connection_failed": "Cannot connect to Aquarea: {message}"
+    "connection_failed": "Cannot connect to Aquarea: {message}",
+    "no_tank": "This heat pump has no hot water tank.",
+    "unknown_zone": "Zone {{zone}} does not exist on this heat pump.",
+    "no_current_setpoint": "The current setpoint is not known yet; wait for the next update.",
+    "relative_main_zone_only": "A relative change is only possible on the main zone.",
+    "no_cooling": "This heat pump does not support cooling."
   },
   "info": {
     "yes": "Yes",

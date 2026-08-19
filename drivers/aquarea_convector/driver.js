@@ -4,11 +4,11 @@ const Homey = require('homey');
 const AquareaHomeClient = require('../../lib/AquareaHomeClient');
 
 /**
- * Driver pour les convecteurs / fan coils Aquarea Home (Solution Tech Srl).
+ * Driver for Aquarea Home convectors / fan coils (Solution Tech Srl).
  *
- * Le pairing utilise le template Homey `login_credentials` : l'utilisateur
- * saisit son e-mail / mot de passe Aquarea Home, on teste les identifiants
- * via AquareaHomeClient, puis on liste les appareils disponibles.
+ * Pairing uses the Homey `login_credentials` template: the user enters their
+ * Aquarea Home e-mail / password, the credentials are checked through
+ * AquareaHomeClient, then the available devices are listed.
  */
 class AquareaConvectorDriver extends Homey.Driver {
 

@@ -6,11 +6,13 @@
   "brandColor": "#0055A4",
   "name": {
     "en": "Panasonic Aquarea",
-    "fr": "Panasonic Aquarea"
+    "fr": "Panasonic Aquarea",
+    "nl": "Panasonic Aquarea"
   },
   "description": {
     "en": "Your Aquarea heat pump, working smarter with Homey.",
-    "fr": "Votre pompe à chaleur Aquarea, pilotée intelligemment par Homey."
+    "fr": "Votre pompe à chaleur Aquarea, pilotée intelligemment par Homey.",
+    "nl": "Je Aquarea-warmtepomp, slimmer geregeld met Homey."
   },
   "category": [
     "climate"
@@ -29,6 +31,13 @@
       "panasonic",
       "chauffage",
       "climat"
+    ],
+    "nl": [
+      "warmtepomp",
+      "aquarea",
+      "panasonic",
+      "verwarming",
+      "klimaat"
     ]
   },
   "platforms": [
@@ -50,11 +59,13 @@
       "type": "number",
       "title": {
         "en": "Water temperature",
-        "fr": "Temperature d'eau"
+        "fr": "Temperature d'eau",
+        "nl": "Watertemperatuur"
       },
       "units": {
         "en": "°C",
-        "fr": "°C"
+        "fr": "°C",
+        "nl": "°C"
       },
       "decimals": 1,
       "getable": true,
@@ -67,11 +78,13 @@
       "type": "number",
       "title": {
         "en": "Water pressure",
-        "fr": "Pression d'eau"
+        "fr": "Pression d'eau",
+        "nl": "Waterdruk"
       },
       "units": {
         "en": "bar",
-        "fr": "bar"
+        "fr": "bar",
+        "nl": "bar"
       },
       "decimals": 2,
       "getable": true,
@@ -84,7 +97,8 @@
       "type": "boolean",
       "title": {
         "en": "Circulation pump",
-        "fr": "Circulateur"
+        "fr": "Circulateur",
+        "nl": "Circulatiepomp"
       },
       "getable": true,
       "setable": false,
@@ -92,11 +106,13 @@
       "insights": true,
       "insightsTitleTrue": {
         "en": "Circulation pump running",
-        "fr": "Circulateur en marche"
+        "fr": "Circulateur en marche",
+        "nl": "Circulatiepomp draait"
       },
       "insightsTitleFalse": {
         "en": "Circulation pump stopped",
-        "fr": "Circulateur arrete"
+        "fr": "Circulateur arrete",
+        "nl": "Circulatiepomp gestopt"
       },
       "icon": "/assets/capabilities/pump_running.svg"
     },
@@ -104,7 +120,8 @@
       "type": "boolean",
       "title": {
         "en": "Defrosting",
-        "fr": "Degivrage"
+        "fr": "Degivrage",
+        "nl": "Ontdooien"
       },
       "getable": true,
       "setable": false,
@@ -112,11 +129,13 @@
       "insights": true,
       "insightsTitleTrue": {
         "en": "Defrost started",
-        "fr": "Degivrage demarre"
+        "fr": "Degivrage demarre",
+        "nl": "Ontdooien gestart"
       },
       "insightsTitleFalse": {
         "en": "Defrost ended",
-        "fr": "Degivrage termine"
+        "fr": "Degivrage termine",
+        "nl": "Ontdooien beëindigd"
       },
       "icon": "/assets/capabilities/defrost.svg"
     },
@@ -124,7 +143,8 @@
       "type": "enum",
       "title": {
         "en": "Quiet mode",
-        "fr": "Mode silencieux"
+        "fr": "Mode silencieux",
+        "nl": "Stille modus"
       },
       "getable": true,
       "setable": true,
@@ -136,35 +156,40 @@
           "id": "off",
           "title": {
             "en": "Off",
-            "fr": "Arret"
+            "fr": "Arret",
+            "nl": "Uit"
           }
         },
         {
           "id": "level1",
           "title": {
             "en": "Level 1",
-            "fr": "Niveau 1"
+            "fr": "Niveau 1",
+            "nl": "Niveau 1"
           }
         },
         {
           "id": "level2",
           "title": {
             "en": "Level 2",
-            "fr": "Niveau 2"
+            "fr": "Niveau 2",
+            "nl": "Niveau 2"
           }
         },
         {
           "id": "level3",
           "title": {
             "en": "Level 3",
-            "fr": "Niveau 3"
+            "fr": "Niveau 3",
+            "nl": "Niveau 3"
           }
         },
         {
           "id": "unknown",
           "title": {
             "en": "Unknown",
-            "fr": "Inconnu"
+            "fr": "Inconnu",
+            "nl": "Onbekend"
           }
         }
       ]
@@ -173,7 +198,8 @@
       "type": "enum",
       "title": {
         "en": "Powerful mode",
-        "fr": "Mode puissant"
+        "fr": "Mode puissant",
+        "nl": "Powerful-modus"
       },
       "getable": true,
       "setable": true,
@@ -185,35 +211,40 @@
           "id": "off",
           "title": {
             "en": "Off",
-            "fr": "Arret"
+            "fr": "Arret",
+            "nl": "Uit"
           }
         },
         {
           "id": "30min",
           "title": {
             "en": "30 minutes",
-            "fr": "30 minutes"
+            "fr": "30 minutes",
+            "nl": "30 minuten"
           }
         },
         {
           "id": "60min",
           "title": {
             "en": "60 minutes",
-            "fr": "60 minutes"
+            "fr": "60 minutes",
+            "nl": "60 minuten"
           }
         },
         {
           "id": "90min",
           "title": {
             "en": "90 minutes",
-            "fr": "90 minutes"
+            "fr": "90 minutes",
+            "nl": "90 minuten"
           }
         },
         {
           "id": "unknown",
           "title": {
             "en": "Unknown",
-            "fr": "Inconnu"
+            "fr": "Inconnu",
+            "nl": "Onbekend"
           }
         }
       ]
@@ -222,7 +253,8 @@
       "type": "boolean",
       "title": {
         "en": "Holiday mode",
-        "fr": "Mode vacances"
+        "fr": "Mode vacances",
+        "nl": "Vakantiemodus"
       },
       "getable": true,
       "setable": true,
@@ -230,19 +262,45 @@
       "insights": true,
       "insightsTitleTrue": {
         "en": "Holiday mode on",
-        "fr": "Mode vacances actif"
+        "fr": "Mode vacances actif",
+        "nl": "Vakantiemodus aan"
       },
       "insightsTitleFalse": {
         "en": "Holiday mode off",
-        "fr": "Mode vacances inactif"
+        "fr": "Mode vacances inactif",
+        "nl": "Vakantiemodus uit"
       },
       "icon": "/assets/capabilities/holiday_mode.svg"
+    },
+    "cooling_mode": {
+      "type": "boolean",
+      "title": {
+        "en": "Cooling",
+        "fr": "Rafraichissement",
+        "nl": "Koelen"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Switched to cooling",
+        "fr": "Passage en rafraichissement",
+        "nl": "Overgeschakeld naar koelen"
+      },
+      "insightsTitleFalse": {
+        "en": "Switched to heating",
+        "fr": "Passage en chauffage",
+        "nl": "Overgeschakeld naar verwarmen"
+      },
+      "icon": "/assets/capabilities/cooling_mode.svg"
     },
     "force_dhw": {
       "type": "boolean",
       "title": {
         "en": "Forced hot water",
-        "fr": "Eau chaude forcee"
+        "fr": "Eau chaude forcee",
+        "nl": "Geforceerd warm water"
       },
       "getable": true,
       "setable": false,
@@ -250,11 +308,13 @@
       "insights": true,
       "insightsTitleTrue": {
         "en": "Forced hot water on",
-        "fr": "Eau chaude forcee active"
+        "fr": "Eau chaude forcee active",
+        "nl": "Geforceerd warm water aan"
       },
       "insightsTitleFalse": {
         "en": "Forced hot water off",
-        "fr": "Eau chaude forcee inactive"
+        "fr": "Eau chaude forcee inactive",
+        "nl": "Geforceerd warm water uit"
       },
       "icon": "/assets/capabilities/force_dhw.svg"
     },
@@ -262,7 +322,8 @@
       "type": "boolean",
       "title": {
         "en": "Backup heater",
-        "fr": "Appoint electrique"
+        "fr": "Appoint electrique",
+        "nl": "Bijverwarming"
       },
       "getable": true,
       "setable": false,
@@ -270,11 +331,13 @@
       "insights": true,
       "insightsTitleTrue": {
         "en": "Backup heater on",
-        "fr": "Appoint electrique actif"
+        "fr": "Appoint electrique actif",
+        "nl": "Bijverwarming aan"
       },
       "insightsTitleFalse": {
         "en": "Backup heater off",
-        "fr": "Appoint electrique inactif"
+        "fr": "Appoint electrique inactif",
+        "nl": "Bijverwarming uit"
       },
       "icon": "/assets/capabilities/force_heater.svg"
     },
@@ -282,7 +345,8 @@
       "type": "boolean",
       "title": {
         "en": "Bivalent source active",
-        "fr": "Source bivalente active"
+        "fr": "Source bivalente active",
+        "nl": "Bivalente bron actief"
       },
       "getable": true,
       "setable": false,
@@ -290,11 +354,13 @@
       "insights": true,
       "insightsTitleTrue": {
         "en": "Bivalent source on",
-        "fr": "Source bivalente active"
+        "fr": "Source bivalente active",
+        "nl": "Bivalente bron aan"
       },
       "insightsTitleFalse": {
         "en": "Bivalent source off",
-        "fr": "Source bivalente inactive"
+        "fr": "Source bivalente inactive",
+        "nl": "Bivalente bron uit"
       },
       "icon": "/assets/capabilities/bivalent.svg"
     },
@@ -302,7 +368,8 @@
       "type": "boolean",
       "title": {
         "en": "Electric anode",
-        "fr": "Anode electrique"
+        "fr": "Anode electrique",
+        "nl": "Elektrische anode"
       },
       "getable": true,
       "setable": false,
@@ -310,11 +377,13 @@
       "insights": true,
       "insightsTitleTrue": {
         "en": "Electric anode on",
-        "fr": "Anode electrique active"
+        "fr": "Anode electrique active",
+        "nl": "Elektrische anode aan"
       },
       "insightsTitleFalse": {
         "en": "Electric anode off",
-        "fr": "Anode electrique inactive"
+        "fr": "Anode electrique inactive",
+        "nl": "Elektrische anode uit"
       },
       "icon": "/assets/capabilities/electric_anode.svg"
     },
@@ -322,7 +391,8 @@
       "type": "enum",
       "title": {
         "en": "Eco / Comfort preset",
-        "fr": "Prereglage Eco / Confort"
+        "fr": "Prereglage Eco / Confort",
+        "nl": "Eco / Comfort-voorinstelling"
       },
       "getable": true,
       "setable": false,
@@ -334,28 +404,32 @@
           "id": "normal",
           "title": {
             "en": "Normal",
-            "fr": "Normal"
+            "fr": "Normal",
+            "nl": "Normaal"
           }
         },
         {
           "id": "eco",
           "title": {
             "en": "Eco",
-            "fr": "Eco"
+            "fr": "Eco",
+            "nl": "Eco"
           }
         },
         {
           "id": "comfort",
           "title": {
             "en": "Comfort",
-            "fr": "Confort"
+            "fr": "Confort",
+            "nl": "Comfort"
           }
         },
         {
           "id": "unknown",
           "title": {
             "en": "Unknown",
-            "fr": "Inconnu"
+            "fr": "Inconnu",
+            "nl": "Onbekend"
           }
         }
       ]
@@ -364,7 +438,8 @@
       "type": "enum",
       "title": {
         "en": "Current operation",
-        "fr": "Fonctionnement en cours"
+        "fr": "Fonctionnement en cours",
+        "nl": "Huidige werking"
       },
       "getable": true,
       "setable": false,
@@ -376,28 +451,48 @@
           "id": "idle",
           "title": {
             "en": "Idle",
-            "fr": "Au repos"
+            "fr": "Au repos",
+            "nl": "Inactief"
           }
         },
         {
-          "id": "pump",
+          "id": "heating",
           "title": {
-            "en": "Heating / cooling",
-            "fr": "Chauffage / rafraichissement"
+            "en": "Heating",
+            "fr": "Chauffage",
+            "nl": "Verwarmen"
           }
         },
         {
-          "id": "water",
+          "id": "cooling",
+          "title": {
+            "en": "Cooling",
+            "fr": "Rafraichissement",
+            "nl": "Koelen"
+          }
+        },
+        {
+          "id": "hot_water",
           "title": {
             "en": "Hot water",
-            "fr": "Eau chaude"
+            "fr": "Eau chaude",
+            "nl": "Warm water"
+          }
+        },
+        {
+          "id": "active",
+          "title": {
+            "en": "Heating / cooling",
+            "fr": "Chauffage ou rafraichissement",
+            "nl": "Verwarmen / koelen"
           }
         },
         {
           "id": "unknown",
           "title": {
             "en": "Unknown",
-            "fr": "Inconnu"
+            "fr": "Inconnu",
+            "nl": "Onbekend"
           }
         }
       ]
@@ -406,7 +501,8 @@
       "type": "enum",
       "title": {
         "en": "Fan speed",
-        "fr": "Vitesse ventilateur"
+        "fr": "Vitesse ventilateur",
+        "nl": "Ventilatorsnelheid"
       },
       "getable": true,
       "setable": true,
@@ -417,21 +513,24 @@
           "id": "auto",
           "title": {
             "en": "Auto",
-            "fr": "Auto"
+            "fr": "Auto",
+            "nl": "Auto"
           }
         },
         {
           "id": "max",
           "title": {
             "en": "Max",
-            "fr": "Max"
+            "fr": "Max",
+            "nl": "Max"
           }
         },
         {
           "id": "night",
           "title": {
             "en": "Min",
-            "fr": "Min"
+            "fr": "Min",
+            "nl": "Min"
           }
         }
       ]
@@ -440,7 +539,8 @@
       "type": "boolean",
       "title": {
         "en": "Flap",
-        "fr": "Volet"
+        "fr": "Volet",
+        "nl": "Klep"
       },
       "getable": true,
       "setable": true,
@@ -448,22 +548,26 @@
       "insights": false,
       "insightsTitleTrue": {
         "en": "Flap open",
-        "fr": "Volet ouvert"
+        "fr": "Volet ouvert",
+        "nl": "Klep open"
       },
       "insightsTitleFalse": {
         "en": "Flap closed",
-        "fr": "Volet ferme"
+        "fr": "Volet ferme",
+        "nl": "Klep gesloten"
       }
     },
     "measure_cost": {
       "type": "number",
       "title": {
         "en": "Energy cost today",
-        "fr": "Cout energie aujourd'hui"
+        "fr": "Cout energie aujourd'hui",
+        "nl": "Energiekosten vandaag"
       },
       "units": {
         "en": "€",
-        "fr": "€"
+        "fr": "€",
+        "nl": "€"
       },
       "decimals": 3,
       "getable": true,
@@ -474,16 +578,400 @@
     }
   },
   "flow": {
+    "triggers": [
+      {
+        "id": "state_became_true",
+        "title": {
+          "en": "Aquarea [[capability]] turned on",
+          "fr": "Aquarea [[capability]] active",
+          "nl": "Aquarea [[capability]] ingeschakeld"
+        },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] turned on",
+          "fr": "[[device]] : [[capability]] active",
+          "nl": "[[device]]: [[capability]] ingeschakeld"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "capability",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "cooling_mode",
+                "title": {
+                  "en": "Cooling",
+                  "fr": "Rafraichissement",
+                  "nl": "Koelen"
+                }
+              },
+              {
+                "id": "pump_running",
+                "title": {
+                  "en": "Circulation pump",
+                  "fr": "Circulateur",
+                  "nl": "Circulatiepomp"
+                }
+              },
+              {
+                "id": "defrost_active",
+                "title": {
+                  "en": "Defrosting",
+                  "fr": "Degivrage",
+                  "nl": "Ontdooien"
+                }
+              },
+              {
+                "id": "force_dhw",
+                "title": {
+                  "en": "Forced hot water",
+                  "fr": "Eau chaude forcee",
+                  "nl": "Geforceerd warm water"
+                }
+              },
+              {
+                "id": "force_heater",
+                "title": {
+                  "en": "Backup heater",
+                  "fr": "Appoint electrique",
+                  "nl": "Bijverwarming"
+                }
+              },
+              {
+                "id": "bivalent_active",
+                "title": {
+                  "en": "Bivalent source",
+                  "fr": "Source bivalente",
+                  "nl": "Bivalente bron"
+                }
+              },
+              {
+                "id": "electric_anode",
+                "title": {
+                  "en": "Electric anode",
+                  "fr": "Anode electrique",
+                  "nl": "Elektrische anode"
+                }
+              },
+              {
+                "id": "holiday_mode",
+                "title": {
+                  "en": "Holiday mode",
+                  "fr": "Mode vacances",
+                  "nl": "Vakantiemodus"
+                }
+              },
+              {
+                "id": "onoff.tank",
+                "title": {
+                  "en": "Hot water tank",
+                  "fr": "Ballon ECS",
+                  "nl": "Warmwaterboiler"
+                }
+              },
+              {
+                "id": "onoff.zone",
+                "title": {
+                  "en": "Heating zone",
+                  "fr": "Zone de chauffage",
+                  "nl": "Verwarmingszone"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "state_became_false",
+        "title": {
+          "en": "Aquarea [[capability]] turned off",
+          "fr": "Aquarea [[capability]] desactive",
+          "nl": "Aquarea [[capability]] uitgeschakeld"
+        },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] turned off",
+          "fr": "[[device]] : [[capability]] desactive",
+          "nl": "[[device]]: [[capability]] uitgeschakeld"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "capability",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "cooling_mode",
+                "title": {
+                  "en": "Cooling",
+                  "fr": "Rafraichissement",
+                  "nl": "Koelen"
+                }
+              },
+              {
+                "id": "pump_running",
+                "title": {
+                  "en": "Circulation pump",
+                  "fr": "Circulateur",
+                  "nl": "Circulatiepomp"
+                }
+              },
+              {
+                "id": "defrost_active",
+                "title": {
+                  "en": "Defrosting",
+                  "fr": "Degivrage",
+                  "nl": "Ontdooien"
+                }
+              },
+              {
+                "id": "force_dhw",
+                "title": {
+                  "en": "Forced hot water",
+                  "fr": "Eau chaude forcee",
+                  "nl": "Geforceerd warm water"
+                }
+              },
+              {
+                "id": "force_heater",
+                "title": {
+                  "en": "Backup heater",
+                  "fr": "Appoint electrique",
+                  "nl": "Bijverwarming"
+                }
+              },
+              {
+                "id": "bivalent_active",
+                "title": {
+                  "en": "Bivalent source",
+                  "fr": "Source bivalente",
+                  "nl": "Bivalente bron"
+                }
+              },
+              {
+                "id": "electric_anode",
+                "title": {
+                  "en": "Electric anode",
+                  "fr": "Anode electrique",
+                  "nl": "Elektrische anode"
+                }
+              },
+              {
+                "id": "holiday_mode",
+                "title": {
+                  "en": "Holiday mode",
+                  "fr": "Mode vacances",
+                  "nl": "Vakantiemodus"
+                }
+              },
+              {
+                "id": "onoff.tank",
+                "title": {
+                  "en": "Hot water tank",
+                  "fr": "Ballon ECS",
+                  "nl": "Warmwaterboiler"
+                }
+              },
+              {
+                "id": "onoff.zone",
+                "title": {
+                  "en": "Heating zone",
+                  "fr": "Zone de chauffage",
+                  "nl": "Verwarmingszone"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mode_changed",
+        "title": {
+          "en": "Aquarea [[capability]] changed",
+          "fr": "Aquarea [[capability]] a change",
+          "nl": "Aquarea [[capability]] gewijzigd"
+        },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] changed",
+          "fr": "[[device]] : [[capability]] a change",
+          "nl": "[[device]]: [[capability]] gewijzigd"
+        },
+        "tokens": [
+          {
+            "name": "value",
+            "type": "string",
+            "title": {
+              "en": "New value",
+              "fr": "Nouvelle valeur",
+              "nl": "Nieuwe waarde"
+            },
+            "example": {
+              "en": "heat",
+              "fr": "heat",
+              "nl": "heat"
+            }
+          },
+          {
+            "name": "previous",
+            "type": "string",
+            "title": {
+              "en": "Previous value",
+              "fr": "Valeur precedente",
+              "nl": "Vorige waarde"
+            },
+            "example": {
+              "en": "off",
+              "fr": "off",
+              "nl": "off"
+            }
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "capability",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "thermostat_mode",
+                "title": {
+                  "en": "Operation mode",
+                  "fr": "Mode de fonctionnement",
+                  "nl": "Bedrijfsmodus"
+                }
+              },
+              {
+                "id": "operation_direction",
+                "title": {
+                  "en": "Current operation",
+                  "fr": "Fonctionnement en cours",
+                  "nl": "Huidige werking"
+                }
+              },
+              {
+                "id": "special_status",
+                "title": {
+                  "en": "Eco / Comfort preset",
+                  "fr": "Prereglage Eco / Confort",
+                  "nl": "Eco / Comfort-voorinstelling"
+                }
+              },
+              {
+                "id": "quiet_mode",
+                "title": {
+                  "en": "Quiet mode",
+                  "fr": "Mode silencieux",
+                  "nl": "Stille modus"
+                }
+              },
+              {
+                "id": "powerful_mode",
+                "title": {
+                  "en": "Powerful mode",
+                  "fr": "Mode puissant",
+                  "nl": "Powerful-modus"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "measurement_changed",
+        "title": {
+          "en": "Aquarea [[capability]] value changed",
+          "fr": "La valeur Aquarea [[capability]] a change",
+          "nl": "Aquarea [[capability]] waarde gewijzigd"
+        },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] value changed",
+          "fr": "[[device]] : la valeur [[capability]] a change",
+          "nl": "[[device]]: [[capability]] waarde gewijzigd"
+        },
+        "tokens": [
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "New value",
+              "fr": "Nouvelle valeur",
+              "nl": "Nieuwe waarde"
+            },
+            "example": 1.8
+          },
+          {
+            "name": "previous",
+            "type": "number",
+            "title": {
+              "en": "Previous value",
+              "fr": "Valeur precedente",
+              "nl": "Vorige waarde"
+            },
+            "example": 1.9
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "capability",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "measure_water_pressure",
+                "title": {
+                  "en": "Water pressure",
+                  "fr": "Pression d'eau",
+                  "nl": "Waterdruk"
+                }
+              },
+              {
+                "id": "measure_water_temperature",
+                "title": {
+                  "en": "Water temperature",
+                  "fr": "Temperature d'eau",
+                  "nl": "Watertemperatuur"
+                }
+              },
+              {
+                "id": "measure_temperature.outdoor",
+                "title": {
+                  "en": "Outdoor temperature",
+                  "fr": "Temperature exterieure",
+                  "nl": "Buitentemperatuur"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "conditions": [
       {
         "id": "capability_is_true",
         "title": {
           "en": "Aquarea [[capability]] is active",
-          "fr": "Aquarea [[capability]] est actif"
+          "fr": "Aquarea [[capability]] est actif",
+          "nl": "Aquarea [[capability]] is actief"
         },
         "titleFormatted": {
           "en": "[[device]]: [[capability]] is active",
-          "fr": "[[device]] : [[capability]] est actif"
+          "fr": "[[device]] : [[capability]] est actif",
+          "nl": "[[device]]: [[capability]] is actief"
         },
         "args": [
           {
@@ -496,59 +984,91 @@
             "type": "dropdown",
             "values": [
               {
+                "id": "cooling_mode",
+                "title": {
+                  "en": "Cooling",
+                  "fr": "Rafraichissement",
+                  "nl": "Koelen"
+                }
+              },
+              {
                 "id": "pump_running",
                 "title": {
                   "en": "Circulation pump",
-                  "fr": "Circulateur"
+                  "fr": "Circulateur",
+                  "nl": "Circulatiepomp"
                 }
               },
               {
                 "id": "defrost_active",
                 "title": {
                   "en": "Defrosting",
-                  "fr": "Degivrage"
+                  "fr": "Degivrage",
+                  "nl": "Ontdooien"
                 }
               },
               {
                 "id": "force_dhw",
                 "title": {
                   "en": "Forced hot water",
-                  "fr": "Eau chaude forcee"
+                  "fr": "Eau chaude forcee",
+                  "nl": "Geforceerd warm water"
                 }
               },
               {
                 "id": "force_heater",
                 "title": {
                   "en": "Backup heater",
-                  "fr": "Appoint electrique"
+                  "fr": "Appoint electrique",
+                  "nl": "Bijverwarming"
                 }
               },
               {
                 "id": "bivalent_active",
                 "title": {
                   "en": "Bivalent source",
-                  "fr": "Source bivalente"
+                  "fr": "Source bivalente",
+                  "nl": "Bivalente bron"
                 }
               },
               {
                 "id": "electric_anode",
                 "title": {
                   "en": "Electric anode",
-                  "fr": "Anode electrique"
+                  "fr": "Anode electrique",
+                  "nl": "Elektrische anode"
                 }
               },
               {
                 "id": "holiday_mode",
                 "title": {
                   "en": "Holiday mode",
-                  "fr": "Mode vacances"
+                  "fr": "Mode vacances",
+                  "nl": "Vakantiemodus"
+                }
+              },
+              {
+                "id": "onoff.tank",
+                "title": {
+                  "en": "Hot water tank",
+                  "fr": "Ballon ECS",
+                  "nl": "Warmwaterboiler"
+                }
+              },
+              {
+                "id": "onoff.zone",
+                "title": {
+                  "en": "Heating zone",
+                  "fr": "Zone de chauffage",
+                  "nl": "Verwarmingszone"
                 }
               },
               {
                 "id": "convector_flap",
                 "title": {
                   "en": "Convector flap",
-                  "fr": "Volet du convecteur"
+                  "fr": "Volet du convecteur",
+                  "nl": "Convectorklep"
                 }
               }
             ]
@@ -559,55 +1079,70 @@
         "id": "capability_equals",
         "title": {
           "en": "Aquarea [[capability]] equals [[value]]",
-          "fr": "Aquarea [[capability]] est egal a [[value]]"
+          "fr": "Aquarea [[capability]] est egal a [[value]]",
+          "nl": "Aquarea [[capability]] is gelijk aan [[value]]"
         },
         "titleFormatted": {
           "en": "[[device]]: [[capability]] equals [[value]]",
-          "fr": "[[device]] : [[capability]] est egal a [[value]]"
+          "fr": "[[device]] : [[capability]] est egal a [[value]]",
+          "nl": "[[device]]: [[capability]] is gelijk aan [[value]]"
         },
         "args": [
           {
             "name": "device",
             "type": "device",
-            "filter": "capabilities=operation_direction|special_status|quiet_mode|powerful_mode|convector_fan_speed"
+            "filter": "capabilities=operation_direction|special_status|quiet_mode|powerful_mode|thermostat_mode|convector_fan_speed"
           },
           {
             "name": "capability",
             "type": "dropdown",
             "values": [
               {
+                "id": "thermostat_mode",
+                "title": {
+                  "en": "Operation mode",
+                  "fr": "Mode de fonctionnement",
+                  "nl": "Bedrijfsmodus"
+                }
+              },
+              {
                 "id": "operation_direction",
                 "title": {
                   "en": "Current operation",
-                  "fr": "Fonctionnement en cours"
+                  "fr": "Fonctionnement en cours",
+                  "nl": "Huidige werking"
                 }
               },
               {
                 "id": "special_status",
                 "title": {
                   "en": "Eco / Comfort preset",
-                  "fr": "Prereglage Eco / Confort"
+                  "fr": "Prereglage Eco / Confort",
+                  "nl": "Eco / Comfort-voorinstelling"
                 }
               },
               {
                 "id": "quiet_mode",
                 "title": {
                   "en": "Quiet mode",
-                  "fr": "Mode silencieux"
+                  "fr": "Mode silencieux",
+                  "nl": "Stille modus"
                 }
               },
               {
                 "id": "powerful_mode",
                 "title": {
                   "en": "Powerful mode",
-                  "fr": "Mode puissant"
+                  "fr": "Mode puissant",
+                  "nl": "Powerful-modus"
                 }
               },
               {
                 "id": "convector_fan_speed",
                 "title": {
                   "en": "Fan speed",
-                  "fr": "Vitesse ventilateur"
+                  "fr": "Vitesse ventilateur",
+                  "nl": "Ventilatorsnelheid"
                 }
               }
             ]
@@ -617,8 +1152,163 @@
             "type": "text",
             "placeholder": {
               "en": "Value",
-              "fr": "Valeur"
+              "fr": "Valeur",
+              "nl": "Waarde"
             }
+          }
+        ]
+      },
+      {
+        "id": "measurement_compare",
+        "title": {
+          "en": "Aquarea [[capability]] is [[operator]] [[value]]",
+          "fr": "Aquarea [[capability]] est [[operator]] [[value]]",
+          "nl": "Aquarea [[capability]] is [[operator]] [[value]]"
+        },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] is [[operator]] [[value]]",
+          "fr": "[[device]] : [[capability]] est [[operator]] [[value]]",
+          "nl": "[[device]]: [[capability]] is [[operator]] [[value]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "capability",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "measure_water_pressure",
+                "title": {
+                  "en": "Water pressure",
+                  "fr": "Pression d'eau",
+                  "nl": "Waterdruk"
+                }
+              },
+              {
+                "id": "measure_water_temperature",
+                "title": {
+                  "en": "Water temperature",
+                  "fr": "Temperature d'eau",
+                  "nl": "Watertemperatuur"
+                }
+              },
+              {
+                "id": "measure_temperature.outdoor",
+                "title": {
+                  "en": "Outdoor temperature",
+                  "fr": "Temperature exterieure",
+                  "nl": "Buitentemperatuur"
+                }
+              },
+              {
+                "id": "target_temperature",
+                "title": {
+                  "en": "Main setpoint",
+                  "fr": "Consigne principale",
+                  "nl": "Hoofdinstelpunt"
+                }
+              },
+              {
+                "id": "target_temperature.zone",
+                "title": {
+                  "en": "Zone setpoint / curve offset",
+                  "fr": "Consigne zone / decalage loi d'eau",
+                  "nl": "Zone-instelpunt / curveverschuiving"
+                }
+              },
+              {
+                "id": "measure_temperature",
+                "title": {
+                  "en": "Main temperature",
+                  "fr": "Temperature principale",
+                  "nl": "Hoofdtemperatuur"
+                }
+              },
+              {
+                "id": "measure_temperature.zone",
+                "title": {
+                  "en": "Zone temperature",
+                  "fr": "Temperature de zone",
+                  "nl": "Zonetemperatuur"
+                }
+              },
+              {
+                "id": "meter_power.heat",
+                "title": {
+                  "en": "Heat energy today",
+                  "fr": "Energie chauffage aujourd'hui",
+                  "nl": "Verwarmingsenergie vandaag"
+                }
+              },
+              {
+                "id": "meter_power.cool",
+                "title": {
+                  "en": "Cool energy today",
+                  "fr": "Energie clim aujourd'hui",
+                  "nl": "Koelenergie vandaag"
+                }
+              },
+              {
+                "id": "meter_power.tank",
+                "title": {
+                  "en": "Tank energy today",
+                  "fr": "Energie ballon aujourd'hui",
+                  "nl": "Boilerenergie vandaag"
+                }
+              }
+            ]
+          },
+          {
+            "name": "operator",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "gt",
+                "title": {
+                  "en": "greater than",
+                  "fr": "superieur a",
+                  "nl": "groter dan"
+                }
+              },
+              {
+                "id": "lt",
+                "title": {
+                  "en": "less than",
+                  "fr": "inferieur a",
+                  "nl": "kleiner dan"
+                }
+              },
+              {
+                "id": "gte",
+                "title": {
+                  "en": "greater than or equal to",
+                  "fr": "superieur ou egal a",
+                  "nl": "groter dan of gelijk aan"
+                }
+              },
+              {
+                "id": "lte",
+                "title": {
+                  "en": "less than or equal to",
+                  "fr": "inferieur ou egal a",
+                  "nl": "kleiner dan of gelijk aan"
+                }
+              }
+            ]
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Value",
+              "fr": "Valeur",
+              "nl": "Waarde"
+            },
+            "step": 0.01
           }
         ]
       }
@@ -628,28 +1318,66 @@
         "id": "set_zone_setpoint",
         "title": {
           "en": "Set zone setpoint / curve offset to [[value]]",
-          "fr": "Regler la consigne zone / le decalage de loi d'eau sur [[value]]"
+          "fr": "Regler la consigne zone / le decalage de loi d'eau sur [[value]]",
+          "nl": "Zet zone-instelpunt / curveverschuiving op [[value]]"
         },
         "titleFormatted": {
-          "en": "Set [[device]] zone setpoint / curve offset to [[value]]",
-          "fr": "Regler la consigne zone / le decalage de loi d'eau de [[device]] sur [[value]]"
+          "en": "Set [[device]] [[zone]] setpoint / curve offset to [[value]]",
+          "fr": "Regler la consigne / le decalage de [[zone]] de [[device]] sur [[value]]",
+          "nl": "Zet instelpunt / curveverschuiving van [[device]] [[zone]] op [[value]]"
         },
         "args": [
           {
             "name": "device",
             "type": "device",
-            "filter": "capabilities=target_temperature.zone"
+            "filter": "capabilities=onoff.zone"
           },
           {
             "name": "value",
             "type": "number",
             "title": {
               "en": "Setpoint / offset",
-              "fr": "Consigne / decalage"
+              "fr": "Consigne / decalage",
+              "nl": "Instelpunt / verschuiving"
             },
             "min": -5,
             "max": 60,
             "step": 1
+          },
+          {
+            "name": "zone",
+            "type": "dropdown",
+            "title": {
+              "en": "Zone",
+              "fr": "Zone",
+              "nl": "Zone"
+            },
+            "values": [
+              {
+                "id": "main",
+                "title": {
+                  "en": "Main zone",
+                  "fr": "Zone principale",
+                  "nl": "Hoofdzone"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Zone 1",
+                  "fr": "Zone 1",
+                  "nl": "Zone 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Zone 2",
+                  "fr": "Zone 2",
+                  "nl": "Zone 2"
+                }
+              }
+            ]
           }
         ]
       },
@@ -657,11 +1385,13 @@
         "id": "set_quiet_mode",
         "title": {
           "en": "Set quiet mode to [[mode]]",
-          "fr": "Regler le mode silencieux sur [[mode]]"
+          "fr": "Regler le mode silencieux sur [[mode]]",
+          "nl": "Zet stille modus op [[mode]]"
         },
         "titleFormatted": {
           "en": "Set [[device]] quiet mode to [[mode]]",
-          "fr": "Regler le mode silencieux de [[device]] sur [[mode]]"
+          "fr": "Regler le mode silencieux de [[device]] sur [[mode]]",
+          "nl": "Zet stille modus van [[device]] op [[mode]]"
         },
         "args": [
           {
@@ -677,28 +1407,32 @@
                 "id": "off",
                 "title": {
                   "en": "Off",
-                  "fr": "Arret"
+                  "fr": "Arret",
+                  "nl": "Uit"
                 }
               },
               {
                 "id": "level1",
                 "title": {
                   "en": "Level 1",
-                  "fr": "Niveau 1"
+                  "fr": "Niveau 1",
+                  "nl": "Niveau 1"
                 }
               },
               {
                 "id": "level2",
                 "title": {
                   "en": "Level 2",
-                  "fr": "Niveau 2"
+                  "fr": "Niveau 2",
+                  "nl": "Niveau 2"
                 }
               },
               {
                 "id": "level3",
                 "title": {
                   "en": "Level 3",
-                  "fr": "Niveau 3"
+                  "fr": "Niveau 3",
+                  "nl": "Niveau 3"
                 }
               }
             ]
@@ -709,11 +1443,13 @@
         "id": "set_powerful_mode",
         "title": {
           "en": "Set powerful mode to [[mode]]",
-          "fr": "Regler le mode puissant sur [[mode]]"
+          "fr": "Regler le mode puissant sur [[mode]]",
+          "nl": "Zet Powerful-modus op [[mode]]"
         },
         "titleFormatted": {
           "en": "Set [[device]] powerful mode to [[mode]]",
-          "fr": "Regler le mode puissant de [[device]] sur [[mode]]"
+          "fr": "Regler le mode puissant de [[device]] sur [[mode]]",
+          "nl": "Zet Powerful-modus van [[device]] op [[mode]]"
         },
         "args": [
           {
@@ -729,28 +1465,32 @@
                 "id": "off",
                 "title": {
                   "en": "Off",
-                  "fr": "Arret"
+                  "fr": "Arret",
+                  "nl": "Uit"
                 }
               },
               {
                 "id": "30min",
                 "title": {
                   "en": "30 minutes",
-                  "fr": "30 minutes"
+                  "fr": "30 minutes",
+                  "nl": "30 minuten"
                 }
               },
               {
                 "id": "60min",
                 "title": {
                   "en": "60 minutes",
-                  "fr": "60 minutes"
+                  "fr": "60 minutes",
+                  "nl": "60 minuten"
                 }
               },
               {
                 "id": "90min",
                 "title": {
                   "en": "90 minutes",
-                  "fr": "90 minutes"
+                  "fr": "90 minutes",
+                  "nl": "90 minuten"
                 }
               }
             ]
@@ -761,11 +1501,13 @@
         "id": "set_holiday_mode",
         "title": {
           "en": "Set holiday mode [[state]]",
-          "fr": "Mettre le mode vacances sur [[state]]"
+          "fr": "Mettre le mode vacances sur [[state]]",
+          "nl": "Zet vakantiemodus [[state]]"
         },
         "titleFormatted": {
           "en": "Set [[device]] holiday mode [[state]]",
-          "fr": "Mettre le mode vacances de [[device]] sur [[state]]"
+          "fr": "Mettre le mode vacances de [[device]] sur [[state]]",
+          "nl": "Zet vakantiemodus van [[device]] [[state]]"
         },
         "args": [
           {
@@ -781,14 +1523,648 @@
                 "id": "on",
                 "title": {
                   "en": "On",
-                  "fr": "Actif"
+                  "fr": "Actif",
+                  "nl": "Aan"
                 }
               },
               {
                 "id": "off",
                 "title": {
                   "en": "Off",
-                  "fr": "Inactif"
+                  "fr": "Inactif",
+                  "nl": "Uit"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_operation_mode",
+        "title": {
+          "en": "Set operation mode to [[mode]]",
+          "fr": "Regler le mode de fonctionnement sur [[mode]]",
+          "nl": "Zet bedrijfsmodus op [[mode]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] operation mode to [[mode]]",
+          "fr": "Regler le mode de fonctionnement de [[device]] sur [[mode]]",
+          "nl": "Zet bedrijfsmodus van [[device]] op [[mode]]"
+        },
+        "hint": {
+          "en": "Heating / cooling \"only\" cuts the hot water tank; the \"+ hot water\" variants allow it. Auto leaves the tank untouched.",
+          "fr": "Les modes \"seul\" coupent le ballon ECS, les modes \"+ eau chaude\" l'autorisent. Auto laisse le ballon inchange.",
+          "nl": "Verwarmen / koelen \"alleen\" schakelt de warmwaterboiler uit; de varianten \"+ warm water\" laten die toe. Auto laat de boiler ongemoeid."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heating only",
+                  "fr": "Chauffage seul",
+                  "nl": "Alleen verwarmen"
+                }
+              },
+              {
+                "id": "heat_tank",
+                "title": {
+                  "en": "Heating + hot water",
+                  "fr": "Chauffage + eau chaude",
+                  "nl": "Verwarmen + warm water"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cooling only",
+                  "fr": "Rafraichissement seul",
+                  "nl": "Alleen koelen"
+                }
+              },
+              {
+                "id": "cool_tank",
+                "title": {
+                  "en": "Cooling + hot water",
+                  "fr": "Rafraichissement + eau chaude",
+                  "nl": "Koelen + warm water"
+                }
+              },
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto",
+                  "fr": "Auto",
+                  "nl": "Auto"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Arret",
+                  "nl": "Uit"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_power",
+        "title": {
+          "en": "Turn the heat pump [[state]]",
+          "fr": "Mettre la pompe a chaleur sur [[state]]",
+          "nl": "Zet de warmtepomp [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Turn [[device]] [[state]]",
+          "fr": "Mettre [[device]] sur [[state]]",
+          "nl": "Zet [[device]] [[state]]"
+        },
+        "hint": {
+          "en": "Turns the unit on or off without changing the operation mode, unlike the operation mode card.",
+          "fr": "Allume ou eteint l'unite sans toucher au mode de fonctionnement, contrairement a la carte mode.",
+          "nl": "Zet het toestel aan of uit zonder de bedrijfsmodus te wijzigen, in tegenstelling tot de kaart voor de bedrijfsmodus."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif",
+                  "nl": "Aan"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif",
+                  "nl": "Uit"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_cooling_mode",
+        "title": {
+          "en": "Switch to [[mode]]",
+          "fr": "Passer en [[mode]]",
+          "nl": "Schakel over naar [[mode]]"
+        },
+        "titleFormatted": {
+          "en": "Switch [[device]] to [[mode]]",
+          "fr": "Passer [[device]] en [[mode]]",
+          "nl": "Schakel [[device]] over naar [[mode]]"
+        },
+        "hint": {
+          "en": "Keeps the hot water tank in its current state, and starts the heat pump if it was off.",
+          "fr": "Conserve l'etat du ballon ECS, et demarre la pompe a chaleur si elle etait a l'arret.",
+          "nl": "Laat de warmwaterboiler in de huidige stand staan en start de warmtepomp als die uit stond."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=cooling_mode"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heating",
+                  "fr": "Chauffage",
+                  "nl": "Verwarmen"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cooling",
+                  "fr": "Rafraichissement",
+                  "nl": "Koelen"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "adjust_zone_setpoint",
+        "title": {
+          "en": "Adjust zone setpoint / curve offset by [[delta]]",
+          "fr": "Ajuster la consigne zone / le decalage de loi d'eau de [[delta]]",
+          "nl": "Wijzig zone-instelpunt / curveverschuiving met [[delta]]"
+        },
+        "titleFormatted": {
+          "en": "Adjust [[device]] [[zone]] setpoint / curve offset by [[delta]]",
+          "fr": "Ajuster la consigne / le decalage de [[zone]] de [[device]] de [[delta]]",
+          "nl": "Wijzig instelpunt / curveverschuiving van [[device]] [[zone]] met [[delta]]"
+        },
+        "hint": {
+          "en": "Relative change, clamped to the range reported by the heat pump. Main zone only.",
+          "fr": "Variation relative, bornee a la plage remontee par la PAC. Zone principale uniquement.",
+          "nl": "Relatieve wijziging, begrensd tot het bereik dat de warmtepomp doorgeeft. Alleen de hoofdzone."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "delta",
+            "type": "number",
+            "title": {
+              "en": "Change",
+              "fr": "Ecart",
+              "nl": "Wijziging"
+            },
+            "min": -20,
+            "max": 20,
+            "step": 1
+          },
+          {
+            "name": "zone",
+            "type": "dropdown",
+            "title": {
+              "en": "Zone",
+              "fr": "Zone",
+              "nl": "Zone"
+            },
+            "values": [
+              {
+                "id": "main",
+                "title": {
+                  "en": "Main zone",
+                  "fr": "Zone principale",
+                  "nl": "Hoofdzone"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Zone 1",
+                  "fr": "Zone 1",
+                  "nl": "Zone 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Zone 2",
+                  "fr": "Zone 2",
+                  "nl": "Zone 2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_zone_cool_setpoint",
+        "title": {
+          "en": "Set zone cooling setpoint to [[value]]",
+          "fr": "Regler la consigne de rafraichissement de zone sur [[value]]",
+          "nl": "Zet koelinstelpunt van de zone op [[value]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] [[zone]] cooling setpoint to [[value]]",
+          "fr": "Regler la consigne de rafraichissement de [[zone]] de [[device]] sur [[value]]",
+          "nl": "Zet koelinstelpunt van [[device]] [[zone]] op [[value]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Setpoint / offset",
+              "fr": "Consigne / decalage",
+              "nl": "Instelpunt / verschuiving"
+            },
+            "min": -5,
+            "max": 40,
+            "step": 1
+          },
+          {
+            "name": "zone",
+            "type": "dropdown",
+            "title": {
+              "en": "Zone",
+              "fr": "Zone",
+              "nl": "Zone"
+            },
+            "values": [
+              {
+                "id": "main",
+                "title": {
+                  "en": "Main zone",
+                  "fr": "Zone principale",
+                  "nl": "Hoofdzone"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Zone 1",
+                  "fr": "Zone 1",
+                  "nl": "Zone 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Zone 2",
+                  "fr": "Zone 2",
+                  "nl": "Zone 2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_zone_onoff",
+        "title": {
+          "en": "Turn heating zone [[state]]",
+          "fr": "Mettre la zone de chauffage sur [[state]]",
+          "nl": "Zet verwarmingszone [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Turn [[device]] [[zone]] [[state]]",
+          "fr": "Mettre [[zone]] de [[device]] sur [[state]]",
+          "nl": "Zet [[device]] [[zone]] [[state]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif",
+                  "nl": "Aan"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif",
+                  "nl": "Uit"
+                }
+              }
+            ]
+          },
+          {
+            "name": "zone",
+            "type": "dropdown",
+            "title": {
+              "en": "Zone",
+              "fr": "Zone",
+              "nl": "Zone"
+            },
+            "values": [
+              {
+                "id": "main",
+                "title": {
+                  "en": "Main zone",
+                  "fr": "Zone principale",
+                  "nl": "Hoofdzone"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Zone 1",
+                  "fr": "Zone 1",
+                  "nl": "Zone 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Zone 2",
+                  "fr": "Zone 2",
+                  "nl": "Zone 2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_tank_setpoint",
+        "title": {
+          "en": "Set hot water tank setpoint to [[value]]",
+          "fr": "Regler la consigne du ballon ECS sur [[value]]",
+          "nl": "Zet instelpunt van de warmwaterboiler op [[value]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] hot water tank setpoint to [[value]]",
+          "fr": "Regler la consigne du ballon ECS de [[device]] sur [[value]]",
+          "nl": "Zet instelpunt van de warmwaterboiler van [[device]] op [[value]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=onoff.tank"
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Setpoint",
+              "fr": "Consigne",
+              "nl": "Instelpunt"
+            },
+            "min": 20,
+            "max": 75,
+            "step": 1
+          }
+        ]
+      },
+      {
+        "id": "set_tank_onoff",
+        "title": {
+          "en": "Turn the hot water tank [[state]]",
+          "fr": "Mettre le ballon ECS sur [[state]]",
+          "nl": "Zet de warmwaterboiler [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Turn [[device]] hot water tank [[state]]",
+          "fr": "Mettre le ballon ECS de [[device]] sur [[state]]",
+          "nl": "Zet de warmwaterboiler van [[device]] [[state]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=onoff.tank"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif",
+                  "nl": "Aan"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif",
+                  "nl": "Uit"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_force_dhw",
+        "title": {
+          "en": "Set forced hot water [[state]]",
+          "fr": "Mettre l'eau chaude forcee sur [[state]]",
+          "nl": "Zet geforceerd warm water [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] forced hot water [[state]]",
+          "fr": "Mettre l'eau chaude forcee de [[device]] sur [[state]]",
+          "nl": "Zet geforceerd warm water van [[device]] [[state]]"
+        },
+        "hint": {
+          "en": "One-shot boost: the heat pump clears it by itself once the tank setpoint is reached.",
+          "fr": "Impulsion : la PAC annule le forcage seule des que la consigne du ballon est atteinte.",
+          "nl": "Eenmalige boost: de warmtepomp schakelt deze zelf uit zodra het instelpunt van de boiler is bereikt."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=force_dhw"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif",
+                  "nl": "Aan"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif",
+                  "nl": "Uit"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_force_heater",
+        "title": {
+          "en": "Set the backup heater [[state]]",
+          "fr": "Mettre l'appoint electrique sur [[state]]",
+          "nl": "Zet de bijverwarming [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] backup heater [[state]]",
+          "fr": "Mettre l'appoint electrique de [[device]] sur [[state]]",
+          "nl": "Zet de bijverwarming van [[device]] [[state]]"
+        },
+        "hint": {
+          "en": "Direct electric heating, with no COP. Use sparingly.",
+          "fr": "Chauffage electrique direct, sans COP. A utiliser avec parcimonie.",
+          "nl": "Directe elektrische verwarming, zonder COP. Spaarzaam gebruiken."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=force_heater"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif",
+                  "nl": "Aan"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif",
+                  "nl": "Uit"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "request_defrost",
+        "title": {
+          "en": "Start a manual defrost",
+          "fr": "Lancer un degivrage manuel",
+          "nl": "Start een handmatige ontdooiing"
+        },
+        "titleFormatted": {
+          "en": "Start a manual defrost on [[device]]",
+          "fr": "Lancer un degivrage manuel sur [[device]]",
+          "nl": "Start een handmatige ontdooiing op [[device]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=defrost_active"
+          }
+        ]
+      },
+      {
+        "id": "set_special_status",
+        "title": {
+          "en": "Set the Eco / Comfort preset to [[status]]",
+          "fr": "Regler le prereglage Eco / Confort sur [[status]]",
+          "nl": "Zet de Eco / Comfort-voorinstelling op [[status]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] Eco / Comfort preset to [[status]]",
+          "fr": "Regler le prereglage Eco / Confort de [[device]] sur [[status]]",
+          "nl": "Zet de Eco / Comfort-voorinstelling van [[device]] op [[status]]"
+        },
+        "hint": {
+          "en": "Applies the Eco / Comfort offsets configured on the heat pump remote control.",
+          "fr": "Applique les decalages Eco / Confort configures sur la telecommande de la PAC.",
+          "nl": "Past de Eco / Comfort-verschuivingen toe die op de afstandsbediening van de warmtepomp zijn ingesteld."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=special_status"
+          },
+          {
+            "name": "status",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "normal",
+                "title": {
+                  "en": "Normal",
+                  "fr": "Normal",
+                  "nl": "Normaal"
+                }
+              },
+              {
+                "id": "eco",
+                "title": {
+                  "en": "Eco",
+                  "fr": "Eco",
+                  "nl": "Eco"
+                }
+              },
+              {
+                "id": "comfort",
+                "title": {
+                  "en": "Comfort",
+                  "fr": "Confort",
+                  "nl": "Comfort"
                 }
               }
             ]
@@ -799,11 +2175,13 @@
         "id": "set_convector_fan_speed",
         "title": {
           "en": "Set fan speed to [[speed]]",
-          "fr": "Regler la vitesse du ventilateur sur [[speed]]"
+          "fr": "Regler la vitesse du ventilateur sur [[speed]]",
+          "nl": "Zet ventilatorsnelheid op [[speed]]"
         },
         "titleFormatted": {
           "en": "Set [[device]] fan speed to [[speed]]",
-          "fr": "Regler la vitesse du ventilateur de [[device]] sur [[speed]]"
+          "fr": "Regler la vitesse du ventilateur de [[device]] sur [[speed]]",
+          "nl": "Zet ventilatorsnelheid van [[device]] op [[speed]]"
         },
         "args": [
           {
@@ -819,21 +2197,24 @@
                 "id": "auto",
                 "title": {
                   "en": "Auto",
-                  "fr": "Auto"
+                  "fr": "Auto",
+                  "nl": "Auto"
                 }
               },
               {
                 "id": "night",
                 "title": {
                   "en": "Min",
-                  "fr": "Min"
+                  "fr": "Min",
+                  "nl": "Min"
                 }
               },
               {
                 "id": "max",
                 "title": {
                   "en": "Max",
-                  "fr": "Max"
+                  "fr": "Max",
+                  "nl": "Max"
                 }
               }
             ]
@@ -844,11 +2225,13 @@
         "id": "set_convector_flap",
         "title": {
           "en": "Set convector flap [[state]]",
-          "fr": "Mettre le volet du convecteur sur [[state]]"
+          "fr": "Mettre le volet du convecteur sur [[state]]",
+          "nl": "Zet convectorklep [[state]]"
         },
         "titleFormatted": {
           "en": "Set [[device]] convector flap [[state]]",
-          "fr": "Mettre le volet du convecteur de [[device]] sur [[state]]"
+          "fr": "Mettre le volet du convecteur de [[device]] sur [[state]]",
+          "nl": "Zet convectorklep van [[device]] [[state]]"
         },
         "args": [
           {
@@ -864,14 +2247,16 @@
                 "id": "open",
                 "title": {
                   "en": "Open",
-                  "fr": "Ouvert"
+                  "fr": "Ouvert",
+                  "nl": "Open"
                 }
               },
               {
                 "id": "closed",
                 "title": {
                   "en": "Closed",
-                  "fr": "Ferme"
+                  "fr": "Ferme",
+                  "nl": "Gesloten"
                 }
               }
             ]
@@ -885,7 +2270,8 @@
       "id": "aquarea_convector",
       "name": {
         "en": "Aquarea Convector (Aquarea Home)",
-        "fr": "Convecteur Aquarea (Aquarea Home)"
+        "fr": "Convecteur Aquarea (Aquarea Home)",
+        "nl": "Aquarea Convector (Aquarea Home)"
       },
       "class": "thermostat",
       "capabilities": [
@@ -903,34 +2289,39 @@
           "step": 1,
           "units": {
             "en": "°C",
-            "fr": "°C"
+            "fr": "°C",
+            "nl": "°C"
           }
         },
         "thermostat_mode": {
           "title": {
             "en": "Operation mode",
-            "fr": "Mode de fonctionnement"
+            "fr": "Mode de fonctionnement",
+            "nl": "Bedrijfsmodus"
           },
           "values": [
             {
               "id": "auto",
               "title": {
                 "en": "Auto",
-                "fr": "Auto"
+                "fr": "Auto",
+                "nl": "Auto"
               }
             },
             {
               "id": "heat",
               "title": {
                 "en": "Heat",
-                "fr": "Chauffage"
+                "fr": "Chauffage",
+                "nl": "Verwarmen"
               }
             },
             {
               "id": "cool",
               "title": {
                 "en": "Cool",
-                "fr": "Rafraichissement"
+                "fr": "Rafraichissement",
+                "nl": "Koelen"
               }
             }
           ]
@@ -954,11 +2345,13 @@
           "options": {
             "usernameLabel": {
               "en": "Aquarea Home e-mail",
-              "fr": "E-mail Aquarea Home"
+              "fr": "E-mail Aquarea Home",
+              "nl": "Aquarea Home e-mailadres"
             },
             "passwordLabel": {
               "en": "Password",
-              "fr": "Mot de passe"
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord"
             }
           },
           "navigation": {
@@ -982,7 +2375,8 @@
           "type": "group",
           "label": {
             "en": "Polling",
-            "fr": "Interrogation (polling)"
+            "fr": "Interrogation (polling)",
+            "nl": "Polling"
           },
           "children": [
             {
@@ -990,18 +2384,21 @@
               "type": "number",
               "label": {
                 "en": "Polling interval (seconds)",
-                "fr": "Intervalle d'interrogation (secondes)"
+                "fr": "Intervalle d'interrogation (secondes)",
+                "nl": "Polling-interval (seconden)"
               },
               "hint": {
                 "en": "Time between cloud refreshes. Minimum 30 s, recommended 60 s.",
-                "fr": "Delai entre deux rafraichissements. Minimum 30 s, recommande 60 s."
+                "fr": "Delai entre deux rafraichissements. Minimum 30 s, recommande 60 s.",
+                "nl": "Tijd tussen cloud-updates. Minimaal 30 s, aanbevolen 60 s."
               },
               "value": 60,
               "min": 30,
               "max": 3600,
               "units": {
                 "en": "s",
-                "fr": "s"
+                "fr": "s",
+                "nl": "s"
               }
             }
           ]
@@ -1010,7 +2407,8 @@
           "type": "group",
           "label": {
             "en": "About / Disclaimer",
-            "fr": "A propos / Avertissement"
+            "fr": "A propos / Avertissement",
+            "nl": "Over / Disclaimer"
           },
           "children": [
             {
@@ -1018,12 +2416,14 @@
               "type": "label",
               "label": {
                 "en": "Disclaimer",
-                "fr": "Avertissement"
+                "fr": "Avertissement",
+                "nl": "Disclaimer"
               },
               "value": "This is an UNOFFICIAL community app for Aquarea Home (Solution Tech Srl). Not affiliated with Panasonic Corporation or Solution Tech Srl. Uses a private undocumented API that may change at any time. Use at your own risk.",
               "hint": {
                 "en": "Community app - not affiliated with Panasonic Corporation.",
-                "fr": "Application communautaire - sans lien avec Panasonic Corporation."
+                "fr": "Application communautaire - sans lien avec Panasonic Corporation.",
+                "nl": "Community-app - niet gelieerd aan Panasonic Corporation."
               }
             }
           ]
@@ -1034,11 +2434,14 @@
       "id": "aquarea_heatpump",
       "name": {
         "en": "Aquarea Heat Pump (Comfort Cloud)",
-        "fr": "Pompe a chaleur Aquarea (Comfort Cloud)"
+        "fr": "Pompe a chaleur Aquarea (Comfort Cloud)",
+        "nl": "Aquarea-warmtepomp (Comfort Cloud)"
       },
       "class": "thermostat",
       "uiIndicator": "measure_temperature",
       "capabilities": [
+        "thermostat_mode",
+        "cooling_mode",
         "target_temperature.zone",
         "target_temperature",
         "onoff.tank",
@@ -1052,7 +2455,6 @@
         "special_status",
         "quiet_mode",
         "powerful_mode",
-        "thermostat_mode",
         "defrost_active",
         "force_heater",
         "force_dhw",
@@ -1065,115 +2467,134 @@
         "onoff.tank": {
           "title": {
             "en": "Tank (DHW)",
-            "fr": "Ballon (ECS)"
+            "fr": "Ballon (ECS)",
+            "nl": "Boiler (tapwater)"
           },
           "insightsTitleTrue": {
             "en": "Tank on",
-            "fr": "Ballon allume"
+            "fr": "Ballon allume",
+            "nl": "Boiler aan"
           },
           "insightsTitleFalse": {
             "en": "Tank off",
-            "fr": "Ballon eteint"
+            "fr": "Ballon eteint",
+            "nl": "Boiler uit"
           }
         },
         "onoff.zone": {
           "title": {
             "en": "Heating zone",
-            "fr": "Zone de chauffage"
+            "fr": "Zone de chauffage",
+            "nl": "Verwarmingszone"
           },
           "insightsTitleTrue": {
             "en": "Zone on",
-            "fr": "Zone allumee"
+            "fr": "Zone allumee",
+            "nl": "Zone aan"
           },
           "insightsTitleFalse": {
             "en": "Zone off",
-            "fr": "Zone eteinte"
+            "fr": "Zone eteinte",
+            "nl": "Zone uit"
           }
         },
         "measure_temperature": {
           "title": {
             "en": "Tank temperature",
-            "fr": "Temperature ballon"
+            "fr": "Temperature ballon",
+            "nl": "Boilertemperatuur"
           }
         },
         "target_temperature": {
           "title": {
             "en": "Tank setpoint",
-            "fr": "Consigne ballon"
+            "fr": "Consigne ballon",
+            "nl": "Instelpunt boiler"
           },
           "min": 40,
           "max": 65,
           "step": 1,
           "units": {
             "en": "°C",
-            "fr": "°C"
+            "fr": "°C",
+            "nl": "°C"
           }
         },
         "measure_temperature.zone": {
           "title": {
             "en": "Zone / heating temperature",
-            "fr": "Temperature zone / chauffage"
+            "fr": "Temperature zone / chauffage",
+            "nl": "Zone- / verwarmingstemperatuur"
           }
         },
         "target_temperature.zone": {
           "title": {
             "en": "Zone setpoint / curve offset",
-            "fr": "Consigne zone / decalage loi d'eau"
+            "fr": "Consigne zone / decalage loi d'eau",
+            "nl": "Zone-instelpunt / curveverschuiving"
           },
           "min": -5,
           "max": 5,
           "step": 1,
           "units": {
             "en": "°C",
-            "fr": "°C"
+            "fr": "°C",
+            "nl": "°C"
           }
         },
         "thermostat_mode": {
           "title": {
             "en": "Operation mode",
-            "fr": "Mode de fonctionnement"
+            "fr": "Mode de fonctionnement",
+            "nl": "Bedrijfsmodus"
           },
           "values": [
             {
               "id": "auto",
               "title": {
                 "en": "Auto",
-                "fr": "Auto"
+                "fr": "Auto",
+                "nl": "Auto"
               }
             },
             {
               "id": "heat",
               "title": {
                 "en": "Heat",
-                "fr": "Chauffage"
+                "fr": "Chauffage",
+                "nl": "Verwarmen"
               }
             },
             {
               "id": "heat_tank",
               "title": {
                 "en": "Heat + hot water",
-                "fr": "Chauffage + ECS"
+                "fr": "Chauffage + ECS",
+                "nl": "Verwarmen + warm water"
               }
             },
             {
               "id": "dhw",
               "title": {
                 "en": "Domestic hot water",
-                "fr": "ECS uniquement"
+                "fr": "ECS uniquement",
+                "nl": "Warm tapwater"
               }
             },
             {
               "id": "cool",
               "title": {
                 "en": "Cool",
-                "fr": "Rafraichissement"
+                "fr": "Rafraichissement",
+                "nl": "Koelen"
               }
             },
             {
               "id": "cool_tank",
               "title": {
                 "en": "Cool + hot water",
-                "fr": "Rafraichissement + ECS"
+                "fr": "Rafraichissement + ECS",
+                "nl": "Koelen + warm water"
               }
             }
           ]
@@ -1181,13 +2602,15 @@
         "measure_temperature.outdoor": {
           "title": {
             "en": "Outdoor temperature",
-            "fr": "Temperature exterieure"
+            "fr": "Temperature exterieure",
+            "nl": "Buitentemperatuur"
           }
         },
         "measure_temperature.indoor": {
           "title": {
             "en": "Indoor (ambient) temperature",
-            "fr": "Temperature ambiante interieure"
+            "fr": "Temperature ambiante interieure",
+            "nl": "Binnentemperatuur (omgeving)"
           }
         }
       },
@@ -1210,11 +2633,13 @@
             "logo": "logo.png",
             "usernameLabel": {
               "en": "Panasonic Comfort Cloud e-mail",
-              "fr": "E-mail Panasonic Comfort Cloud"
+              "fr": "E-mail Panasonic Comfort Cloud",
+              "nl": "Panasonic Comfort Cloud e-mailadres"
             },
             "passwordLabel": {
               "en": "Password",
-              "fr": "Mot de passe"
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord"
             }
           },
           "navigation": {
@@ -1238,7 +2663,8 @@
           "type": "group",
           "label": {
             "en": "Polling",
-            "fr": "Interrogation (polling)"
+            "fr": "Interrogation (polling)",
+            "nl": "Polling"
           },
           "children": [
             {
@@ -1246,18 +2672,21 @@
               "type": "number",
               "label": {
                 "en": "Polling interval (seconds)",
-                "fr": "Intervalle d'interrogation (secondes)"
+                "fr": "Intervalle d'interrogation (secondes)",
+                "nl": "Polling-interval (seconden)"
               },
               "hint": {
                 "en": "Time between cloud refreshes. Do NOT set this too low: Aquarea Smart Cloud rate-limits requests and may temporarily ban your IP or lock your account. Minimum 60 s, recommended 300 s.",
-                "fr": "Delai entre deux rafraichissements. Ne PAS mettre une valeur trop basse : Aquarea Smart Cloud limite le debit et peut bannir temporairement votre IP ou verrouiller le compte. Minimum 60 s, recommande 300 s."
+                "fr": "Delai entre deux rafraichissements. Ne PAS mettre une valeur trop basse : Aquarea Smart Cloud limite le debit et peut bannir temporairement votre IP ou verrouiller le compte. Minimum 60 s, recommande 300 s.",
+                "nl": "Tijd tussen cloud-updates. Stel dit NIET te laag in: Aquarea Smart Cloud beperkt het aantal verzoeken en kan je IP-adres tijdelijk blokkeren of je account vergrendelen. Minimaal 60 s, aanbevolen 300 s."
               },
               "value": 300,
               "min": 60,
               "max": 3600,
               "units": {
                 "en": "s",
-                "fr": "s"
+                "fr": "s",
+                "nl": "s"
               }
             },
             {
@@ -1265,18 +2694,21 @@
               "type": "number",
               "label": {
                 "en": "Energy cost per kWh",
-                "fr": "Cout de l'energie par kWh"
+                "fr": "Cout de l'energie par kWh",
+                "nl": "Energiekosten per kWh"
               },
               "hint": {
                 "en": "If set, the app will calculate the cost from the reported energy. If empty (0), it uses the cost reported by the cloud (usually 0 if not set in Aquarea app).",
-                "fr": "Si renseigne, l'app calcule le cout a partir de l'energie remontee. Si vide (0), utilise le cout remonte par le cloud (souvent 0 si non configure dans l'app Aquarea)."
+                "fr": "Si renseigne, l'app calcule le cout a partir de l'energie remontee. Si vide (0), utilise le cout remonte par le cloud (souvent 0 si non configure dans l'app Aquarea).",
+                "nl": "Indien ingevuld berekent de app de kosten op basis van de gerapporteerde energie. Bij leeg (0) wordt de door de cloud gerapporteerde kostprijs gebruikt (meestal 0 als die niet in de Aquarea-app is ingesteld)."
               },
               "value": 0,
               "min": 0,
               "decimals": 4,
               "units": {
                 "en": "€/kWh",
-                "fr": "€/kWh"
+                "fr": "€/kWh",
+                "nl": "€/kWh"
               }
             }
           ]
@@ -1285,7 +2717,8 @@
           "type": "group",
           "label": {
             "en": "Installation details (read-only)",
-            "fr": "Details de l'installation (lecture seule)"
+            "fr": "Details de l'installation (lecture seule)",
+            "nl": "Installatiegegevens (alleen-lezen)"
           },
           "children": [
             {
@@ -1293,7 +2726,8 @@
               "type": "label",
               "label": {
                 "en": "Service type",
-                "fr": "Type de service"
+                "fr": "Type de service",
+                "nl": "Servicetype"
               },
               "value": "-"
             },
@@ -1302,7 +2736,8 @@
               "type": "label",
               "label": {
                 "en": "Model series",
-                "fr": "Serie du modele"
+                "fr": "Serie du modele",
+                "nl": "Modelserie"
               },
               "value": "-"
             },
@@ -1311,7 +2746,8 @@
               "type": "label",
               "label": {
                 "en": "Heating zones",
-                "fr": "Zones de chauffage"
+                "fr": "Zones de chauffage",
+                "nl": "Verwarmingszones"
               },
               "value": "-"
             },
@@ -1320,11 +2756,13 @@
               "type": "label",
               "label": {
                 "en": "Zone setpoint type",
-                "fr": "Type de consigne de zone"
+                "fr": "Type de consigne de zone",
+                "nl": "Type zone-instelpunt"
               },
               "hint": {
                 "en": "Whether the zone setpoint is an absolute water temperature or an offset applied to the weather-compensation curve.",
-                "fr": "Indique si la consigne de zone est une temperature d'eau absolue ou un decalage applique a la loi d'eau."
+                "fr": "Indique si la consigne de zone est une temperature d'eau absolue ou un decalage applique a la loi d'eau.",
+                "nl": "Of het zone-instelpunt een absolute watertemperatuur is of een verschuiving op de weersafhankelijke stooklijn."
               },
               "value": "-"
             },
@@ -1333,11 +2771,13 @@
               "type": "label",
               "label": {
                 "en": "Zone sensor",
-                "fr": "Sonde de zone"
+                "fr": "Sonde de zone",
+                "nl": "Zonesensor"
               },
               "hint": {
                 "en": "Which sensor drives the zone. With 'Water temperature' the heat pump reports the circuit water temperature, not a room temperature.",
-                "fr": "Sonde qui pilote la zone. Avec 'Temperature d'eau', la pompe a chaleur remonte la temperature d'eau du circuit et non une temperature ambiante."
+                "fr": "Sonde qui pilote la zone. Avec 'Temperature d'eau', la pompe a chaleur remonte la temperature d'eau du circuit et non une temperature ambiante.",
+                "nl": "Welke sensor de zone aanstuurt. Bij 'Watertemperatuur' geeft de warmtepomp de watertemperatuur van het circuit door, niet een ruimtetemperatuur."
               },
               "value": "-"
             },
@@ -1346,11 +2786,13 @@
               "type": "label",
               "label": {
                 "en": "Cool mode code",
-                "fr": "Code mode froid"
+                "fr": "Code mode froid",
+                "nl": "Code koelmodus"
               },
               "hint": {
                 "en": "Raw coolMode value reported by the heat pump. Panasonic does not document its meaning, so it is shown unmodified rather than guessed at.",
-                "fr": "Valeur brute coolMode remontee par la pompe a chaleur. Sa signification n'est pas documentee par Panasonic : elle est affichee telle quelle plutot que devinee."
+                "fr": "Valeur brute coolMode remontee par la pompe a chaleur. Sa signification n'est pas documentee par Panasonic : elle est affichee telle quelle plutot que devinee.",
+                "nl": "Ruwe coolMode-waarde zoals de warmtepomp die doorgeeft. Panasonic documenteert de betekenis niet, daarom wordt de waarde ongewijzigd getoond in plaats van geraden."
               },
               "value": "-"
             },
@@ -1359,7 +2801,8 @@
               "type": "label",
               "label": {
                 "en": "Domestic hot water tank",
-                "fr": "Ballon d'eau chaude sanitaire"
+                "fr": "Ballon d'eau chaude sanitaire",
+                "nl": "Warmwaterboiler (tapwater)"
               },
               "value": "-"
             },
@@ -1368,7 +2811,8 @@
               "type": "label",
               "label": {
                 "en": "Bivalent source",
-                "fr": "Source bivalente"
+                "fr": "Source bivalente",
+                "nl": "Bivalente bron"
               },
               "value": "-"
             },
@@ -1377,7 +2821,8 @@
               "type": "label",
               "label": {
                 "en": "External heater",
-                "fr": "Appoint externe"
+                "fr": "Appoint externe",
+                "nl": "Externe verwarming"
               },
               "value": "-"
             },
@@ -1386,7 +2831,8 @@
               "type": "label",
               "label": {
                 "en": "Control box",
-                "fr": "Boitier de commande"
+                "fr": "Boitier de commande",
+                "nl": "Regelkast"
               },
               "value": "-"
             },
@@ -1395,11 +2841,13 @@
               "type": "label",
               "label": {
                 "en": "Eco / Comfort offsets",
-                "fr": "Decalages Eco / Confort"
+                "fr": "Decalages Eco / Confort",
+                "nl": "Eco / Comfort-verschuivingen"
               },
               "hint": {
                 "en": "Zone offsets configured on the heat pump for the Eco and Comfort presets (heat / cool).",
-                "fr": "Decalages de zone configures sur la pompe a chaleur pour les prereglages Eco et Confort (chaud / froid)."
+                "fr": "Decalages de zone configures sur la pompe a chaleur pour les prereglages Eco et Confort (chaud / froid).",
+                "nl": "Zoneverschuivingen die op de warmtepomp zijn ingesteld voor de voorinstellingen Eco en Comfort (verwarmen / koelen)."
               },
               "value": "-"
             },
@@ -1408,7 +2856,8 @@
               "type": "label",
               "label": {
                 "en": "Last cloud update",
-                "fr": "Dernier rafraichissement cloud"
+                "fr": "Dernier rafraichissement cloud",
+                "nl": "Laatste cloud-update"
               },
               "value": "-"
             }
@@ -1418,7 +2867,8 @@
           "type": "group",
           "label": {
             "en": "About / Disclaimer",
-            "fr": "A propos / Avertissement"
+            "fr": "A propos / Avertissement",
+            "nl": "Over / Disclaimer"
           },
           "children": [
             {
@@ -1426,12 +2876,14 @@
               "type": "label",
               "label": {
                 "en": "Disclaimer",
-                "fr": "Avertissement"
+                "fr": "Avertissement",
+                "nl": "Disclaimer"
               },
               "value": "This is an UNOFFICIAL community app. It is not affiliated with, endorsed by, or supported by Panasonic Corporation. It relies on a private, undocumented API that may change or stop working at any time. Use a DEDICATED secondary Panasonic account shared from your main account to avoid session conflicts. Use at your own risk. / Application NON OFFICIELLE, sans lien avec Panasonic Corporation. Utilisez un compte dedie. Utilisation aux risques de l'utilisateur.",
               "hint": {
                 "en": "Community app - not affiliated with Panasonic Corporation.",
-                "fr": "Application communautaire - sans lien avec Panasonic Corporation."
+                "fr": "Application communautaire - sans lien avec Panasonic Corporation.",
+                "nl": "Community-app - niet gelieerd aan Panasonic Corporation."
               }
             }
           ]

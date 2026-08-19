@@ -3,27 +3,27 @@
 const Homey = require('homey');
 const AquareaHomeClient = require('../../lib/AquareaHomeClient');
 
-// Intervalle de polling par défaut : 60 secondes.
+// Default polling interval: 60 seconds.
 const DEFAULT_POLL_INTERVAL = 60;
 const MIN_POLL_INTERVAL     = 30;
 const TRANSIENT_FAILURES_BEFORE_UNAVAILABLE = 3;
 
-// Mapping operationMode int → thermostat_mode string
+// Mapping operationMode int -> thermostat_mode string
 const MODE_INT_TO_STR = { 0: 'auto', 1: 'heat', 2: 'cool' };
 const MODE_STR_TO_INT = { auto: 0, heat: 1, cool: 2 };
 
 const FAN_INT_TO_STR = { 0: 'auto', 1: 'night', 2: 'max' };
 
 /**
- * Device Homey pour un convecteur / fan coil Aquarea Home.
+ * Homey device for an Aquarea Home convector / fan coil.
  *
- * Capabilities :
- *   - onoff                  (allumage / extinction)
- *   - target_temperature     (consigne température, 5–40 °C)
- *   - measure_temperature    (température ambiante mesurée)
+ * Capabilities:
+ *   - onoff                  (power on / off)
+ *   - target_temperature     (temperature setpoint, 5-40 °C)
+ *   - measure_temperature    (measured room temperature)
  *   - thermostat_mode        (auto / heat / cool)
  *   - convector_fan_speed    (auto / night / max)
- *   - convector_flap         (volet ouvert/fermé)
+ *   - convector_flap         (flap open/closed)
  */
 class AquareaConvectorDevice extends Homey.Device {
 
@@ -34,16 +34,16 @@ class AquareaConvectorDevice extends Homey.Device {
     this._pollTimer = null;
     this._transientPollFailures = 0;
 
-    // Retire les anciennes capabilities d'alarme expérimentales des appareils
-    // déjà installés, sans recréer l'appareil ni affecter ses Flows.
+    // Removes the old experimental alarm capabilities from already installed
+    // devices, without recreating the device or affecting its Flows.
     for (const capability of ['alarm_generic', 'convector_alarm_codes']) {
       if (this.hasCapability(capability)) {
         try {
           await this.removeCapability(capability);
         } catch (err) {
-          // Une capability personnalisée retirée du manifeste peut encore être
-          // présente sur un ancien appareil. Homey répond alors 404 à sa
-          // suppression ; cela ne doit pas empêcher le device de démarrer.
+          // A custom capability removed from the manifest may still be present
+          // on an older device. Homey then answers 404 to its removal; that
+          // must not prevent the device from starting.
           this.error(`Unable to remove legacy capability ${capability}: ${err.message}`);
         }
       }
@@ -110,12 +110,12 @@ class AquareaConvectorDevice extends Homey.Device {
         await this.setCapabilityValue('onoff', !!status.powerState).catch(() => {});
       }
 
-      // measure_temperature (température ambiante)
+      // measure_temperature (room temperature)
       if (status.roomTemperature !== null && status.roomTemperature !== undefined) {
         await this.setCapabilityValue('measure_temperature', status.roomTemperature).catch(() => {});
       }
 
-      // target_temperature (consigne) — mise à jour des bornes dynamiques si disponibles
+      // target_temperature (setpoint) - refresh the dynamic bounds if available
       if (status.setpointMin !== null && status.setpointMin !== undefined &&
           status.setpointMax !== null && status.setpointMax !== undefined) {
         const opts = { min: status.setpointMin, max: status.setpointMax };

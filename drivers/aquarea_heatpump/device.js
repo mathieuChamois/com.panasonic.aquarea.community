@@ -3,37 +3,37 @@
 const Homey = require('homey');
 const AquareaClient = require('../../lib/AquareaClient');
 
-// Intervalle de polling par defaut : 5 minutes.
-// ⚠️  Volontairement eleve pour eviter le rate-limiting / bannissement d'IP
-//     par Aquarea Smart Cloud. Ne PAS descendre sous ce plancher sans raison.
+// Default polling interval: 5 minutes.
+// ⚠️  Deliberately high, to avoid rate-limiting / IP bans from Aquarea Smart
+//     Cloud. Do NOT go below this floor without a good reason.
 const DEFAULT_POLL_INTERVAL_S = 300;
 const MIN_POLL_INTERVAL_S = 60;
 
-// Apres une commande acceptee par le cloud, Aquarea continue de renvoyer
-// l'ancienne valeur pendant plusieurs minutes (le gateway ne remonte son etat
-// que periodiquement). Sans protection, le poll suivant ecrase la valeur
-// choisie dans l'app et l'utilisateur voit la tuile "revenir en arriere".
-// On fait donc confiance a la commande : la valeur locale prime jusqu'a ce que
-// le cloud la confirme, ou au plus pendant OPTIMISTIC_TTL_MS.
+// After a command the cloud has accepted, Aquarea keeps returning the old
+// value for several minutes (the gateway only reports its state periodically).
+// Unprotected, the next poll overwrites the value chosen in the app and the
+// user sees the tile "jump back". So we trust the command: the local value
+// wins until the cloud confirms it, or at most for OPTIMISTIC_TTL_MS.
 const OPTIMISTIC_TTL_MS = 15 * 60 * 1000;
 
-// Rafraichissement de courtoisie apres une commande. Volontairement long :
-// interroger le cloud 5 s apres un ordre ne renvoie que des donnees perimees
-// et rapproche du rate-limiting.
+// Courtesy refresh after a command. Deliberately long: querying the cloud 5 s
+// after an order only returns stale data and brings rate-limiting closer.
 const POST_COMMAND_REFRESH_MS = 90 * 1000;
 
-// Plages de repli, utilisees uniquement quand l'API ne remonte pas
-// heatMin/heatMax. Sans elles, les bornes du manifeste resteraient appliquees a
-// une capability qui ne represente pas la meme grandeur.
+// Fallback ranges, used only when the API does not report heatMin/heatMax.
+// Without them, the manifest bounds would stay applied to a capability that
+// does not represent the same quantity.
 const FALLBACK_CURVE_OFFSET_RANGE = { min: -5, max: 5, step: 1 };
 const FALLBACK_WATER_SETPOINT_RANGE = { min: 20, max: 60, step: 1 };
+const FALLBACK_WATER_COOL_RANGE = { min: 5, max: 25, step: 1 };
 const FALLBACK_TANK_RANGE = { min: 40, max: 65, step: 1 };
 
-// Capabilities pilotables -> methode de gestion de la commande.
+// Controllable capabilities -> method handling the command.
 const COMMAND_HANDLERS = {
   'target_temperature': '_onSetTargetTemperature',
   'target_temperature.zone': '_onSetZoneTemperature',
   'thermostat_mode': '_onCapabilityThermostatMode',
+  'cooling_mode': '_onSetCoolingMode',
   'onoff.tank': '_onSetTankOnoff',
   'onoff.zone': '_onSetZoneOnoff',
   'quiet_mode': '_onSetQuietMode',
@@ -51,7 +51,7 @@ class AquareaDevice extends Homey.Device {
 
     this.log(`Aquarea device init: ${this.getName()} (${this.deviceId}, Comfort Cloud type ${this.deviceType})`);
 
-    // Instancie le client a partir des identifiants stockes au pairing.
+    // Instantiate the client from the credentials stored at pairing time.
     const username = this.getStoreValue('username');
     const password = this.getStoreValue('password');
 
@@ -60,24 +60,30 @@ class AquareaDevice extends Homey.Device {
       return;
     }
 
-    // Zone active (mise a jour a chaque poll). Defaut : 1.
+    // Active zone (updated on every poll). Default: 1.
     this.zoneId = 1;
 
-    // Cache optimiste : capability -> { value, until }. Voir _commit().
+    // Current operating direction. It decides which zone setpoint the tile
+    // shows and which field a setpoint command writes: heatSet when heating,
+    // coolSet when cooling. Kept across restarts, otherwise the tile would show
+    // the heating setpoint on a cooling heat pump until the first poll.
+    this._cooling = Boolean(this.getStoreValue('cooling'));
+
+    // Optimistic cache: capability -> { value, until }. See _commit().
     this._optimistic = new Map();
 
-    // Capabilities dont l'ecouteur de commande est deja enregistre.
+    // Capabilities whose command listener is already registered.
     this._listeners = new Set();
 
-    // Disposition deduite du dernier poll (ballon ECS, type de sonde de zone,
-    // nature de la consigne). Elle conditionne la liste des capabilities :
-    // inutile d'afficher une consigne de ballon sur une PAC qui n'en a pas.
-    // Par defaut, l'installation la plus courante : ballon + sonde d'ambiance.
+    // Layout deduced from the last poll (DHW tank, zone sensor type, nature of
+    // the setpoint). It drives the capability list: no point showing a tank
+    // setpoint on a heat pump that has no tank. Defaults to the most common
+    // installation: tank + room sensor.
     this._layout = this.getStoreValue('layout')
       || this._computeLayout({ hasTank: true, zoneSensorIsWater: false, zoneIsCurveOffset: false });
 
-    // Le client doit exister avant _syncCapabilities() : celui-ci enregistre les
-    // ecouteurs de commande, qui peuvent etre declenches immediatement.
+    // The client must exist before _syncCapabilities(): that one registers the
+    // command listeners, which can be triggered immediately.
     this.client = new AquareaClient({
       username,
       password,
@@ -85,29 +91,30 @@ class AquareaDevice extends Homey.Device {
       error: (...a) => this.error(...a),
     });
 
-    // Restaure une eventuelle session persistee (tokens + clientId + cookies)
-    // pour eviter une re-authentification complete a chaque redemarrage.
+    // Restore any persisted session (tokens + clientId + cookies), to avoid a
+    // full re-authentication on every restart.
     const savedSession = this.getStoreValue('session');
     if (savedSession) this.client.importSession(savedSession);
 
     await this._syncCapabilities(this._layout);
     await this._refreshUiIndicator();
 
-    // Demarre le moteur de polling.
+    // Start the polling engine.
     this._startPolling();
 
-    // Premier rafraichissement immediat (mais protege).
+    // First refresh, immediate (but guarded).
     this._poll().catch(err => this.error('Initial poll failed:', err.message));
   }
 
   // =========================================================================
-  //  Composition de la carte (capabilities)
+  //  Device card composition (capabilities)
   // =========================================================================
 
   /**
-   * Tente de migrer l'indicateur de vignette sans recréer l'appareil. Selon la
-   * version de Homey, le setter peut être exposé directement ou via l'API
-   * Devices. Le rafraîchissement de classe sert de repli non destructif.
+   * Tries to migrate the tile indicator without recreating the device.
+   * Depending on the Homey version, the setter may be exposed directly or
+   * through the Devices API. Refreshing the class is the non-destructive
+   * fallback.
    */
   async _refreshUiIndicator() {
     const migrationKey = 'ui_indicator_refresh_v1';
@@ -137,8 +144,8 @@ class AquareaDevice extends Homey.Device {
         });
         this.log(`[UI indicator] Mis à jour via Devices.updateDevice: ${indicator}`);
       } else if (typeof this.setClass === 'function' && typeof this.getClass === 'function') {
-        // Force Homey à recalculer les métadonnées UI sans changer l'identité
-        // de l'appareil ni les références utilisées dans les Flows.
+        // Force Homey to recompute the UI metadata without changing the
+        // device identity or the references used in Flows.
         await this.setClass(this.getClass());
         this.log(`[UI indicator] Métadonnées UI rafraîchies (indicateur demandé: ${indicator})`);
       } else {
@@ -153,19 +160,19 @@ class AquareaDevice extends Homey.Device {
   }
 
   /**
-   * Determine quelle capability recoit quelle grandeur.
+   * Decides which capability carries which quantity.
    *
-   * `measure_temperature` et `target_temperature` sont les capabilities
-   * "principales" de Homey : `measure_temperature` alimente la temperature de
-   * la piece (et donc les moyennes de zone du foyer), `target_temperature` la
-   * carte thermostat. On n'y met une valeur que si elle a vraiment ce sens :
+   * `measure_temperature` and `target_temperature` are Homey's "main"
+   * capabilities: `measure_temperature` feeds the room temperature (and
+   * therefore the home's zone averages), `target_temperature` the thermostat
+   * card. We only put a value there when it really has that meaning:
    *
-   *  - zoneSensor = 0 => `temperatureNow` est la temperature d'EAU du circuit.
-   *    Elle part dans `measure_water_temperature` ; publier 26 °C d'eau comme
-   *    temperature ambiante fausserait le climat du foyer.
-   *  - heatMin < 0 => `heatSet` est un decalage de loi d'eau en K, pas une
-   *    consigne en °C : il part dans `target_temperature.zone`, qui porte son
-   *    propre libelle et sa propre plage.
+   *  - zoneSensor = 0 => `temperatureNow` is the WATER temperature of the
+   *    circuit. It goes to `measure_water_temperature`; publishing 26 °C of
+   *    water as a room temperature would skew the home climate.
+   *  - heatMin < 0 => `heatSet` is a heating curve offset in K, not a setpoint
+   *    in °C: it goes to `target_temperature.zone`, which carries its own label
+   *    and its own range.
    */
   _computeLayout(data) {
     const hasTank = Boolean(data.hasTank);
@@ -175,9 +182,12 @@ class AquareaDevice extends Homey.Device {
     return {
       hasTank,
       hasBivalent: Boolean(data.config && data.config.bivalent),
+      // coolMode = 0 on a heating-only heat pump: no point showing a
+      // heat/cool switch that could not control anything.
+      hasCooling: Boolean(data.config && data.config.coolMode),
       zoneIsWater,
       zoneIsOffset,
-      // Le ballon ECS, s'il existe, occupe les capabilities principales.
+      // The DHW tank, when present, takes the main capabilities.
       tankTempCap: hasTank ? 'measure_temperature' : null,
       tankSetpointCap: hasTank ? 'target_temperature' : null,
       zoneTempCap: zoneIsWater
@@ -190,13 +200,14 @@ class AquareaDevice extends Homey.Device {
   }
 
   /**
-   * Liste ordonnee des capabilities pour ce materiel. L'ordre du tableau =
-   * l'ordre des tuiles sur la carte.
+   * Ordered capability list for this hardware. The array order = the order of
+   * the tiles on the device card.
    */
   _desiredCapabilities(layout) {
     const { hasTank, hasBivalent } = layout;
     const caps = [];
 
+    if (layout.hasCooling) caps.push('cooling_mode');
     caps.push(layout.zoneSetpointCap);
     if (layout.tankSetpointCap) caps.push(layout.tankSetpointCap);
     if (hasTank) caps.push('onoff.tank');
@@ -206,11 +217,11 @@ class AquareaDevice extends Homey.Device {
 
     caps.push('measure_temperature.outdoor');
 
-    // Etats de fonctionnement remontes par le cloud (lecture seule).
+    // Operating states reported by the cloud (read-only).
     caps.push('operation_direction', 'special_status');
-    // Homey Mobile ouvre par defaut le dernier controle de type "picker".
-    // thermostat_mode est donc place apres les autres pickers afin que le
-    // troisieme onglet s'ouvre sur "Mode de fonctionnement".
+    // Homey Mobile opens the last "picker" control by default. thermostat_mode
+    // is therefore placed after the other pickers, so that the third tab opens
+    // on "Operation mode".
     caps.push('quiet_mode', 'powerful_mode', 'thermostat_mode', 'defrost_active', 'force_heater');
     if (hasTank) caps.push('force_dhw', 'electric_anode');
     if (hasBivalent) caps.push('bivalent_active');
@@ -224,12 +235,12 @@ class AquareaDevice extends Homey.Device {
   }
 
   /**
-   * Aligne les capabilities de l'appareil sur `_desiredCapabilities()`.
+   * Aligns the device capabilities with `_desiredCapabilities()`.
    *
-   * Homey fige l'ordre des capabilities au moment de leur ajout : pour changer
-   * l'ordre il faut les retirer puis les re-ajouter. On ne le fait que si la
-   * liste effective differe reellement, car l'operation remet les valeurs a
-   * zero (elles sont repeuplees au poll suivant).
+   * Homey freezes the capability order at the moment they are added: changing
+   * the order means removing then re-adding them. We only do it when the actual
+   * list really differs, because the operation clears the values (they are
+   * repopulated on the next poll).
    */
   async _syncCapabilities(layout) {
     const desired = this._desiredCapabilities(layout);
@@ -247,7 +258,7 @@ class AquareaDevice extends Homey.Device {
       + `zoneSensor=${layout.zoneIsWater ? 'water' : 'room'} `
       + `zoneSetpoint=${layout.zoneIsOffset ? 'curve offset' : 'absolute'}`);
     this._listeners.clear();
-    this._rangesApplied = false;
+    this._rangesSignature = null;
 
     for (const cap of current) {
       try { await this.removeCapability(cap); } catch (err) { this.error(`removeCapability(${cap})`, err.message); }
@@ -259,7 +270,7 @@ class AquareaDevice extends Homey.Device {
     this._registerCommandListeners();
   }
 
-  /** Enregistre les ecouteurs de commande des capabilities presentes. */
+  /** Registers the command listeners of the capabilities that are present. */
   _registerCommandListeners() {
     for (const [cap, method] of Object.entries(COMMAND_HANDLERS)) {
       if (!this.hasCapability(cap) || this._listeners.has(cap)) continue;
@@ -269,7 +280,7 @@ class AquareaDevice extends Homey.Device {
   }
 
   // =========================================================================
-  //  Moteur de polling
+  //  Polling engine
   // =========================================================================
 
   _resolveInterval() {
@@ -302,9 +313,9 @@ class AquareaDevice extends Homey.Device {
     }
   }
 
-  /** Recupere l'etat depuis le cloud et synchronise les capabilities. */
+  /** Fetches the state from the cloud and syncs the capabilities. */
   async _poll() {
-    if (this._polling) return; // evite le chevauchement de deux polls.
+    if (this._polling) return; // avoids two polls overlapping.
     this._polling = true;
 
     try {
@@ -317,11 +328,21 @@ class AquareaDevice extends Homey.Device {
 
       if (data.zoneId != null) this.zoneId = data.zoneId;
 
-      // Le materiel reellement present peut differer de ce qu'on croyait :
-      // on recompose la carte avant d'ecrire les valeurs.
+      // Ids of every zone: the Flow cards can target a secondary zone, which
+      // the (single-zone) capabilities do not expose.
+      this._zoneIds = (data.zones || [])
+        .map(z => Number(z.zoneId))
+        .filter(n => Number.isFinite(n));
+
+      // The hardware actually present may differ from what we assumed: rebuild
+      // the card before writing the values.
       await this._applyLayout(data);
 
-      // Ajuste une seule fois les plages min/max reelles remontees par l'API.
+      // Operating direction: drives the zone setpoint (heatSet or coolSet) and
+      // therefore the ranges. Must be resolved before _applyRanges().
+      await this._applyDirection(data);
+
+      // Apply the real min/max ranges reported by the API.
       await this._applyRanges(data);
 
       const layout = this._layout;
@@ -331,16 +352,18 @@ class AquareaDevice extends Homey.Device {
         await this._setCapability('onoff.tank', data.tankOn);
       }
       await this._setCapability(layout.zoneTempCap, data.zoneTemperature);
-      await this._setCapability(layout.zoneSetpointCap, data.zoneHeatSet);
+      await this._setCapability(layout.zoneSetpointCap,
+        this._cooling ? data.zoneCoolSet : data.zoneHeatSet);
       await this._setCapability('onoff.zone', data.zoneOn);
 
-      // Systeme.
+      // System.
       await this._setCapability('measure_temperature.outdoor', data.outdoorTemperature);
       await this._setCapability('measure_water_pressure', data.waterPressure);
       await this._setCapability('pump_running', data.pumpRunning);
       await this._setCapability('thermostat_mode', data.thermostatMode);
+      await this._setCapability('cooling_mode', data.isCooling);
 
-      // Etats de fonctionnement.
+      // Operating states.
       await this._setCapability('operation_direction', data.direction);
       await this._setCapability('special_status', data.specialStatus);
       await this._setCapability('quiet_mode', data.quietMode);
@@ -352,19 +375,19 @@ class AquareaDevice extends Homey.Device {
       await this._setCapability('bivalent_active', data.bivalentActive);
       await this._setCapability('holiday_mode', data.holidayMode);
 
-      // Details d'installation (reglages en lecture seule).
+      // Installation details (read-only settings).
       await this._updateInfoSettings(data);
 
-      // Consommation energetique du jour (endpoint separe, erreur non bloquante).
+      // Today's energy consumption (separate endpoint, errors are non-fatal).
       await this._pollConsumption();
 
-      // Persiste la session rafraichie pour survivre aux redemarrages.
+      // Persist the refreshed session so it survives restarts.
       await this.setStoreValue('session', this.client.exportSession());
 
       if (!this.getAvailable()) await this.setAvailable();
     } catch (err) {
       this.error('Polling error:', err.message);
-      // On garde l'appareil dispo sauf erreur persistante d'auth.
+      // Keep the device available except on a persistent auth error.
       if (/identifiants|invalid|2FA|authorization code|access token/i.test(err.message)) {
         await this.setUnavailable(this.homey.__('error.connection_failed', { message: err.message }));
       }
@@ -398,28 +421,41 @@ class AquareaDevice extends Homey.Device {
   }
 
   /**
-   * Ecrit une capability. Les valeurs venant du cloud (force = false) sont
-   * ignorees tant qu'une commande locale recente n'a pas ete confirmee.
+   * Writes a capability. Values coming from the cloud (force = false) are
+   * ignored until a recent local command has been confirmed.
    */
   async _setCapability(cap, value, { force = false } = {}) {
     if (value === null || typeof value === 'undefined') return;
     if (!this.hasCapability(cap)) return;
     if (!force && this._isMasked(cap, value)) return;
+
+    // Read before writing: this is the single choke point for values, so the
+    // right place to fire the Flow cards on a state change.
+    const previous = this.getCapabilityValue(cap);
+
     try {
       await this.setCapabilityValue(cap, value);
     } catch (err) {
       this.error(`setCapabilityValue(${cap}) failed:`, err.message);
+      return;
+    }
+
+    // `previous === null` = first value known after a (re)start: that is not a
+    // hardware state change, so nothing is fired.
+    if (previous !== null && typeof previous !== 'undefined' && !this._sameValue(previous, value)) {
+      this.homey.app.triggerCapabilityChange(this, cap, value, previous);
     }
   }
 
   // =========================================================================
-  //  Cache optimiste des commandes
+  //  Optimistic command cache
   // =========================================================================
 
   /**
-   * Applique immediatement la valeur commandee et la protege des ecrasements
-   * par le cloud. A n'appeler qu'apres l'acquittement de la requete HTTP :
-   * hors erreur reseau / applicative, on considere l'ordre comme transmis.
+   * Applies the commanded value immediately and protects it from being
+   * overwritten by the cloud. Only call it after the HTTP request has been
+   * acknowledged: absent a network / application error, the order is considered
+   * delivered.
    */
   async _commit(cap, value) {
     if (!this.hasCapability(cap)) return;
@@ -427,7 +463,7 @@ class AquareaDevice extends Homey.Device {
     await this._setCapability(cap, value, { force: true });
   }
 
-  /** true si la valeur du cloud doit etre ignoree pour cette capability. */
+  /** true when the cloud value must be ignored for this capability. */
   _isMasked(cap, incoming) {
     const pending = this._optimistic.get(cap);
     if (!pending) return false;
@@ -438,7 +474,7 @@ class AquareaDevice extends Homey.Device {
       return false;
     }
     if (this._sameValue(pending.value, incoming)) {
-      // Le cloud a rattrape son retard : le polling reprend la main.
+      // The cloud has caught up: polling takes over again.
       this._optimistic.delete(cap);
       return false;
     }
@@ -452,49 +488,92 @@ class AquareaDevice extends Homey.Device {
   }
 
   // =========================================================================
-  //  Adaptation a l'installation reelle
+  //  Adaptation to the real installation
   // =========================================================================
 
-  /** Recompose la carte si la disposition deduite a change. */
+  /** Rebuilds the card when the deduced layout has changed. */
   async _applyLayout(data) {
     const layout = this._computeLayout(data);
     if (JSON.stringify(layout) === JSON.stringify(this._layout)) return;
 
     this._layout = layout;
-    this._rangesApplied = false;
+    this._rangesSignature = null;
     await this.setStoreValue('layout', layout);
     await this._syncCapabilities(layout);
   }
 
   /**
-   * Applique (une seule fois) les plages min/max reelles de l'appareil aux
-   * capabilities de consigne, d'apres heatMin/heatMax remontes par l'API.
+   * Updates the operating direction (heating / cooling).
    *
-   * La consigne de zone est soit une temperature d'eau absolue, soit un
-   * decalage de loi d'eau (plage typique -5..+5) : le libelle suit.
+   * Aquarea keeps two independent zone setpoints, heatSet and coolSet. Only one
+   * is meaningful at any given time: the setpoint tile and the commands must
+   * follow the current direction, otherwise the user adjusts the heating
+   * setpoint while believing they are adjusting the cooling one.
+   *
+   * `isCooling` is null when the unit is off: the last known direction is then
+   * kept rather than falling back to "heating".
+   */
+  async _applyDirection(data) {
+    if (data.isCooling === null || typeof data.isCooling === 'undefined') return;
+    if (data.isCooling === this._cooling) return;
+
+    this.log(`Direction changed: ${this._cooling ? 'cooling' : 'heating'} -> ${data.isCooling ? 'cooling' : 'heating'}`);
+    this._cooling = data.isCooling;
+    await this.setStoreValue('cooling', this._cooling);
+
+    // The displayed setpoint changes meaning: an optimistic value inherited
+    // from the other direction would mask the right value for its whole TTL.
+    this._optimistic.delete(this._layout.zoneSetpointCap);
+    // Label, units and bounds differ between heating and cooling.
+    this._rangesSignature = null;
+  }
+
+  /**
+   * Applies the device's real min/max ranges to the setpoint capabilities,
+   * based on heatMin/heatMax (or coolMin/coolMax) reported by the API.
+   *
+   * The zone setpoint is either an absolute water temperature or a heating
+   * curve offset (typical range -5..+5): the label follows.
    */
   async _applyRanges(data) {
-    if (this._rangesApplied) return;
     const layout = this._layout;
+    const cooling = this._cooling;
 
-    // Un decalage de loi d'eau s'exprime en kelvins, pas en degres absolus.
-    const zoneLabel = layout.zoneIsOffset
-      ? { en: 'Zone curve offset', fr: "Decalage loi d'eau zone" }
-      : { en: 'Zone water setpoint', fr: "Consigne d'eau zone" };
+    // A heating curve offset is expressed in kelvin, not in absolute degrees.
+    let zoneLabel;
+    if (layout.zoneIsOffset) {
+      zoneLabel = cooling
+        ? { en: 'Zone cooling curve offset', fr: "Decalage loi d'eau froid zone" }
+        : { en: 'Zone curve offset', fr: "Decalage loi d'eau zone" };
+    } else {
+      zoneLabel = cooling
+        ? { en: 'Zone cooling setpoint', fr: 'Consigne froid zone' }
+        : { en: 'Zone water setpoint', fr: "Consigne d'eau zone" };
+    }
     const zoneUnits = layout.zoneIsOffset ? { en: 'K', fr: 'K' } : { en: '°C', fr: '°C' };
 
-    // ⚠️  Si l'API ne remonte pas de plage, il FAUT quand meme envoyer min/max :
-    //     sinon les bornes du manifeste (40-65 °C, prevues pour le ballon)
-    //     restent en place sur une consigne de zone, et `_rangesApplied` fait
-    //     qu'on ne repassera jamais corriger. On envoie donc toujours un jeu
-    //     complet title + units + min/max/step, ce qui est aussi sur que
-    //     setCapabilityOptions remplace ou fusionne les options existantes.
-    const zoneRange = data.zoneHeatMin != null && data.zoneHeatMax != null
-      ? { min: data.zoneHeatMin, max: data.zoneHeatMax, step: 1 }
-      : (layout.zoneIsOffset ? FALLBACK_CURVE_OFFSET_RANGE : FALLBACK_WATER_SETPOINT_RANGE);
+    // ⚠️  If the API reports no range, min/max MUST still be sent: otherwise
+    //     the manifest bounds (40-65 °C, meant for the tank) stay in place on a
+    //     zone setpoint. So we always send a complete title + units +
+    //     min/max/step set, which is equally safe whether setCapabilityOptions
+    //     replaces or merges the existing options.
+    const zoneMin = cooling ? data.zoneCoolMin : data.zoneHeatMin;
+    const zoneMax = cooling ? data.zoneCoolMax : data.zoneHeatMax;
+    let zoneFallback;
+    if (layout.zoneIsOffset) zoneFallback = FALLBACK_CURVE_OFFSET_RANGE;
+    else zoneFallback = cooling ? FALLBACK_WATER_COOL_RANGE : FALLBACK_WATER_SETPOINT_RANGE;
+
+    const zoneRange = zoneMin != null && zoneMax != null
+      ? { min: zoneMin, max: zoneMax, step: 1 }
+      : zoneFallback;
     const tankRange = data.tankHeatMin != null && data.tankHeatMax != null
       ? { min: data.tankHeatMin, max: data.tankHeatMax, step: 1 }
       : FALLBACK_TANK_RANGE;
+
+    // These options only move on a direction or layout change: rewriting them
+    // on every poll would make the card flicker for nothing.
+    const signature = JSON.stringify({ cooling, zoneLabel, zoneRange, tankRange, layout });
+    if (signature === this._rangesSignature) return;
 
     const jobs = [];
     if (this.hasCapability(layout.zoneSetpointCap)) {
@@ -507,8 +586,8 @@ class AquareaDevice extends Homey.Device {
         units: { en: '°C', fr: '°C' },
       }, tankRange)));
     }
-    // Sans ballon, `measure_temperature` porte la zone : il faut corriger le
-    // libelle herite du manifeste ("Tank temperature").
+    // Without a tank, `measure_temperature` carries the zone: the label
+    // inherited from the manifest ("Tank temperature") must be corrected.
     if (!layout.hasTank && layout.zoneTempCap === 'measure_temperature') {
       jobs.push(this.setCapabilityOptions('measure_temperature', {
         title: { en: 'Room temperature', fr: 'Temperature ambiante' },
@@ -551,16 +630,16 @@ class AquareaDevice extends Homey.Device {
     if (!jobs.length) return;
     try {
       await Promise.all(jobs);
-      this._rangesApplied = true;
+      this._rangesSignature = signature;
     } catch (err) {
       this.error('applyRanges failed:', err.message);
     }
   }
 
   /**
-   * Recopie la configuration figee de l'installation dans les reglages en
-   * lecture seule. N'ecrit que si quelque chose a change, pour ne pas solliciter
-   * le stockage a chaque poll.
+   * Copies the installation's fixed configuration into the read-only settings.
+   * Only writes when something changed, so that storage is not hit on every
+   * poll.
    */
   async _updateInfoSettings(data) {
     const t = key => this.homey.__(`info.${key}`);
@@ -587,7 +666,7 @@ class AquareaDevice extends Homey.Device {
       info_zones: zoneNames ? `${cfg.zoneCount} — ${zoneNames}` : String(cfg.zoneCount || 0),
       info_zone_control: setpointKind + range,
       info_zone_sensor: sensor,
-      // Signification non documentee : on affiche la valeur brute.
+      // Undocumented meaning: display the raw value.
       info_cool_mode: cfg.coolMode != null ? String(cfg.coolMode) : t('unknown'),
       info_tank: data.hasTank ? t('present') : t('absent'),
       info_bivalent: yesNo(cfg.bivalent),
@@ -597,8 +676,8 @@ class AquareaDevice extends Homey.Device {
       info_last_update: new Date().toLocaleString('en-GB', { timeZone: this.homey.clock.getTimezone() }),
     };
 
-    // `info_last_update` change a chaque poll : on l'exclut de la comparaison
-    // pour ne reecrire que lorsqu'une vraie donnee a bouge.
+    // `info_last_update` changes on every poll: exclude it from the comparison
+    // so that we only rewrite when real data moved.
     const signature = JSON.stringify(Object.assign({}, settings, { info_last_update: null }));
     if (signature === this._infoSignature) return;
     this._infoSignature = signature;
@@ -616,12 +695,12 @@ class AquareaDevice extends Homey.Device {
   }
 
   // =========================================================================
-  //  Ecoute des commandes
+  //  Command listeners
   // =========================================================================
 
   /**
-   * Rafraichissement de courtoisie apres une commande, debounce : plusieurs
-   * ordres rapproches ne declenchent qu'un seul appel au cloud.
+   * Courtesy refresh after a command, debounced: several orders in quick
+   * succession trigger only one call to the cloud.
    */
   _refreshSoon() {
     this._cancelRefresh();
@@ -632,9 +711,21 @@ class AquareaDevice extends Homey.Device {
   }
 
   /**
-   * `target_temperature` porte le ballon ECS quand il y en a un, et sinon la
-   * consigne d'eau de la zone (jamais un decalage de loi d'eau : celui-ci vit
-   * sur `target_temperature.zone`). Voir _computeLayout().
+   * Writes the zone setpoint to the field matching the current direction.
+   *
+   * heatSet and coolSet are two distinct settings on the Aquarea side: writing
+   * heatSet while the heat pump is cooling would change nothing visible, and
+   * would silently modify next season's setpoint.
+   */
+  async _writeZoneSetpoint(value, zoneId) {
+    if (this._cooling) return this.client.setZoneCoolTemperature(this.deviceId, value, zoneId);
+    return this.client.setZoneTemperature(this.deviceId, value, zoneId);
+  }
+
+  /**
+   * `target_temperature` carries the DHW tank when there is one, and otherwise
+   * the zone water setpoint (never a heating curve offset: that one lives on
+   * `target_temperature.zone`). See _computeLayout().
    */
   async _onSetTargetTemperature(value) {
     const rounded = Math.round(Number(value));
@@ -642,17 +733,18 @@ class AquareaDevice extends Homey.Device {
       this.log(`Command: tank setpoint -> ${rounded}`);
       await this.client.setTankTemperature(this.deviceId, rounded);
     } else {
-      this.log(`Command: zone setpoint -> ${rounded} (zone ${this.zoneId})`);
-      await this.client.setZoneTemperature(this.deviceId, rounded, this.zoneId);
+      this.log(`Command: zone ${this._cooling ? 'cool' : 'heat'} setpoint -> ${rounded} (zone ${this.zoneId})`);
+      await this._writeZoneSetpoint(rounded, this.zoneId);
     }
     await this._commit('target_temperature', rounded);
     this._refreshSoon();
   }
 
   async _onSetZoneTemperature(value) {
-    this.log(`Command: zone setpoint/offset -> ${value} (zone ${this.zoneId})`);
-    await this.client.setZoneTemperature(this.deviceId, value, this.zoneId);
-    await this._commit('target_temperature.zone', Math.round(Number(value)));
+    const rounded = Math.round(Number(value));
+    this.log(`Command: zone ${this._cooling ? 'cool' : 'heat'} setpoint/offset -> ${rounded} (zone ${this.zoneId})`);
+    await this._writeZoneSetpoint(rounded, this.zoneId);
+    await this._commit('target_temperature.zone', rounded);
     this._refreshSoon();
   }
 
@@ -661,8 +753,16 @@ class AquareaDevice extends Homey.Device {
     await this.client.setMode(this.deviceId, value);
     await this._commit('thermostat_mode', value);
 
-    // setMode() pilote aussi la zone et l'autorisation ECS : on aligne les
-    // interrupteurs sur ce qui vient d'etre envoye (cf. AquareaClient.setMode).
+    // The heat/cool switch is a view of the mode: it must follow, and so must
+    // the direction that decides which zone setpoint is shown and driven.
+    const cooling = this._coolingFromMode(value);
+    if (cooling !== null) {
+      await this._applyDirection({ isCooling: cooling });
+      await this._commit('cooling_mode', cooling);
+    }
+
+    // setMode() also drives the zone and the DHW permission: align the
+    // switches with what was just sent (see AquareaClient.setMode).
     if (value !== 'off') {
       await this._commit('onoff.zone', value !== 'dhw');
       if (value === 'heat_tank' || value === 'cool_tank' || value === 'dhw') await this._commit('onoff.tank', true);
@@ -675,9 +775,10 @@ class AquareaDevice extends Homey.Device {
     this.log(`Command: tank on/off -> ${value}`);
     const on = Boolean(value);
 
-    // En chauffage ou rafraichissement, l'autorisation ECS distingue le mode simple du mode + ECS.
-    // On prefere appeler setMode car cela garantit la coherence cote cloud Panasonic
-    // (certains modeles ignorent une commande tankStatus seule si elle contredit le mode).
+    // In heating or cooling, the DHW permission is what separates the plain
+    // mode from the mode + DHW. We prefer calling setMode because it guarantees
+    // consistency on the Panasonic cloud side (some models ignore a lone
+    // tankStatus command when it contradicts the mode).
     const mode = this.getCapabilityValue('thermostat_mode');
     if (mode === 'heat' || mode === 'heat_tank') {
       const newMode = on ? 'heat_tank' : 'heat';
@@ -703,28 +804,70 @@ class AquareaDevice extends Homey.Device {
     this.log(`Command: zone on/off -> ${value} (zone ${this.zoneId})`);
     const on = Boolean(value);
 
-    // Si on éteint la zone alors qu'on est en mode chauffage/clim,
-    // on passe en mode 'off' global si le ballon est aussi éteint ou absent.
-    // Mais Panasonic permet souvent d'éteindre juste la zone.
-    // Par sécurité et cohérence avec le reste, on utilise setZoneOperation
-    // mais on s'assure que le thermostat_mode reflète l'extinction si c'est global.
+    // When the zone is switched off while in heating/cooling mode, we go to
+    // the global 'off' mode if the tank is off or absent too. But Panasonic
+    // often allows switching off just the zone. For safety and consistency with
+    // the rest, we use setZoneOperation but make sure thermostat_mode reflects
+    // the shutdown when it is a global one.
     await this.client.setZoneOperation(this.deviceId, on, this.zoneId);
     await this._commit('onoff.zone', on);
 
     if (!on) {
       const tankOn = this.getCapabilityValue('onoff.tank');
       if (!tankOn) {
-        // Si tout est éteint, on s'assure que le mode est 'off'
+        // If everything is off, make sure the mode is 'off'
         await this._commit('thermostat_mode', 'off');
       }
     } else {
-      // Si on rallume la zone, on s'assure que le mode n'est pas 'off'
+      // If the zone is switched back on, make sure the mode is not 'off'
       const mode = this.getCapabilityValue('thermostat_mode');
       if (mode === 'off') {
-        await this._commit('thermostat_mode', 'heat'); // Par défaut
+        await this._commit('thermostat_mode', 'heat'); // Default
       }
     }
 
+    this._refreshSoon();
+  }
+
+  /**
+   * Heat/cool switch derived from the operating mode.
+   *
+   * `off` and `auto` are neither one nor the other: we return null, which
+   * leaves the switch in its last position instead of forcing it to "heating"
+   * (which would suggest the heat pump is about to heat).
+   */
+  _coolingFromMode(mode) {
+    if (mode === 'cool' || mode === 'cool_tank') return true;
+    if (mode === 'heat' || mode === 'heat_tank') return false;
+    return null;
+  }
+
+  /**
+   * Switches heating <-> cooling while keeping the current DHW permission:
+   * `heat_tank` becomes `cool_tank`, `heat` becomes `cool`.
+   *
+   * ⚠️  setMode() powers the unit back on (operationStatus = 1): flipping the
+   *     switch while the heat pump is off restarts it.
+   */
+  async _onSetCoolingMode(value) {
+    const cooling = Boolean(value);
+    // We rely on the tank state rather than the current mode: in 'auto' or
+    // 'off', the mode says nothing about the DHW permission.
+    const tankOn = this._layout.hasTank && this.getCapabilityValue('onoff.tank') === true;
+    const mode = cooling
+      ? (tankOn ? 'cool_tank' : 'cool')
+      : (tankOn ? 'heat_tank' : 'heat');
+
+    this.log(`Command: cooling_mode -> ${cooling} (mode ${mode})`);
+    await this.client.setMode(this.deviceId, mode);
+
+    // The direction changes right away: without this, a setpoint set just
+    // after the switch would still go to the old direction's field.
+    await this._applyDirection({ isCooling: cooling });
+
+    await this._commit('cooling_mode', cooling);
+    await this._commit('thermostat_mode', mode);
+    await this._commit('onoff.zone', true);
     this._refreshSoon();
   }
 
@@ -751,7 +894,171 @@ class AquareaDevice extends Homey.Device {
   }
 
   // =========================================================================
-  //  Cycle de vie
+  //  Commands exposed to the Flow cards
+  //
+  //  The capabilities only cover the main zone and do not expose the "pulse"
+  //  commands (forced DHW, backup heater, defrost). These methods are the entry
+  //  point of the Flow cards, see app.js. They follow the same discipline as
+  //  the capability listeners: command -> _commit -> deferred refresh.
+  // =========================================================================
+
+  /**
+   * Resolves the "zone" argument of a Flow card.
+   * `main` (or absent) = the main zone tracked by the capabilities.
+   */
+  _resolveZoneId(zone) {
+    if (zone === undefined || zone === null || zone === '' || zone === 'main') return this.zoneId;
+    const n = Number(zone);
+    if (!Number.isFinite(n)) return this.zoneId;
+    if (this._zoneIds && this._zoneIds.length && !this._zoneIds.includes(n)) {
+      throw new Error(this.homey.__('error.unknown_zone', { zone: n }));
+    }
+    return n;
+  }
+
+  /** A command on a secondary zone must not overwrite the tiles. */
+  async _commitIfMainZone(cap, value, zoneId) {
+    if (zoneId !== this.zoneId) return;
+    await this._commit(cap, value);
+  }
+
+  async flowSetOperationMode(mode) {
+    return this._onCapabilityThermostatMode(mode);
+  }
+
+  /** Heat/cool switch, without having to pick the "+ hot water" variant. */
+  async flowSetCoolingMode(cooling) {
+    if (!this._layout.hasCooling) throw new Error(this.homey.__('error.no_cooling'));
+    return this._onSetCoolingMode(cooling);
+  }
+
+  /** General power on/off, without resetting the mode or the DHW permission. */
+  async flowSetPower(on) {
+    this.log(`Flow: power -> ${on}`);
+    await this.client.setOperationStatus(this.deviceId, on);
+    if (!on) await this._commit('thermostat_mode', 'off');
+    this._refreshSoon();
+  }
+
+  async flowSetZoneSetpoint(value, zone) {
+    const zoneId = this._resolveZoneId(zone);
+    const v = Math.round(Number(value));
+    if (!Number.isFinite(v)) throw new Error('Invalid setpoint');
+    this.log(`Flow: zone ${zoneId} ${this._cooling ? 'cool' : 'heat'} setpoint -> ${v}`);
+    await this._writeZoneSetpoint(v, zoneId);
+    await this._commitIfMainZone(this._layout.zoneSetpointCap, v, zoneId);
+    this._refreshSoon();
+  }
+
+  /**
+   * Relative adjustment of the zone setpoint (+1 K, -2 K, ...).
+   * Useful for load-shedding / tariff-based curtailment Flows.
+   */
+  async flowAdjustZoneSetpoint(delta, zone) {
+    const zoneId = this._resolveZoneId(zone);
+    const cap = this._layout.zoneSetpointCap;
+    const current = this.getCapabilityValue(cap);
+    if (current === null || typeof current === 'undefined') {
+      throw new Error(this.homey.__('error.no_current_setpoint'));
+    }
+    if (zoneId !== this.zoneId) {
+      // With no capability for secondary zones, there is no reliable reference
+      // value: better to refuse than to apply a wrong offset.
+      throw new Error(this.homey.__('error.relative_main_zone_only'));
+    }
+
+    // The real bounds come from _applyRanges(); stick to them so we do not send
+    // a setpoint the heat pump would silently refuse.
+    let opts = {};
+    try { opts = this.getCapabilityOptions(cap) || {}; } catch (err) { /* manifest bounds */ }
+
+    let target = Math.round(Number(current) + Number(delta));
+    if (typeof opts.min === 'number') target = Math.max(opts.min, target);
+    if (typeof opts.max === 'number') target = Math.min(opts.max, target);
+
+    this.log(`Flow: zone ${zoneId} setpoint ${current} ${delta >= 0 ? '+' : ''}${delta} -> ${target}`);
+    await this._writeZoneSetpoint(target, zoneId);
+    await this._commit(cap, target);
+    this._refreshSoon();
+  }
+
+  async flowSetZoneCoolSetpoint(value, zone) {
+    const zoneId = this._resolveZoneId(zone);
+    const v = Math.round(Number(value));
+    if (!Number.isFinite(v)) throw new Error('Invalid setpoint');
+    this.log(`Flow: zone ${zoneId} cool setpoint -> ${v}`);
+    await this.client.setZoneCoolTemperature(this.deviceId, v, zoneId);
+    // The setpoint tile carries coolSet only while the heat pump is cooling;
+    // otherwise this card presets the cooling season without displaying it.
+    if (this._cooling) await this._commitIfMainZone(this._layout.zoneSetpointCap, v, zoneId);
+    this._refreshSoon();
+  }
+
+  async flowSetZoneOnoff(on, zone) {
+    const zoneId = this._resolveZoneId(zone);
+    if (zoneId === this.zoneId) return this._onSetZoneOnoff(on);
+    this.log(`Flow: zone ${zoneId} on/off -> ${on}`);
+    await this.client.setZoneOperation(this.deviceId, on, zoneId);
+    this._refreshSoon();
+  }
+
+  async flowSetTankSetpoint(value) {
+    if (!this._layout.hasTank) throw new Error(this.homey.__('error.no_tank'));
+    const v = Math.round(Number(value));
+    if (!Number.isFinite(v)) throw new Error('Invalid setpoint');
+    this.log(`Flow: tank setpoint -> ${v}`);
+    await this.client.setTankTemperature(this.deviceId, v);
+    await this._commit(this._layout.tankSetpointCap, v);
+    this._refreshSoon();
+  }
+
+  async flowSetTankOnoff(on) {
+    if (!this._layout.hasTank) throw new Error(this.homey.__('error.no_tank'));
+    return this._onSetTankOnoff(on);
+  }
+
+  async flowSetForceDhw(on) {
+    if (!this._layout.hasTank) throw new Error(this.homey.__('error.no_tank'));
+    this.log(`Flow: force DHW -> ${on}`);
+    await this.client.setForceDhw(this.deviceId, on);
+    await this._commit('force_dhw', Boolean(on));
+    this._refreshSoon();
+  }
+
+  async flowSetForceHeater(on) {
+    this.log(`Flow: force backup heater -> ${on}`);
+    await this.client.setForceHeater(this.deviceId, on);
+    await this._commit('force_heater', Boolean(on));
+    this._refreshSoon();
+  }
+
+  async flowRequestDefrost() {
+    this.log('Flow: manual defrost requested');
+    await this.client.requestDefrost(this.deviceId);
+    this._refreshSoon();
+  }
+
+  async flowSetSpecialStatus(status) {
+    this.log(`Flow: special status -> ${status}`);
+    await this.client.setSpecialStatus(this.deviceId, status);
+    await this._commit('special_status', status);
+    this._refreshSoon();
+  }
+
+  async flowSetQuietMode(mode) {
+    return this._onSetQuietMode(mode);
+  }
+
+  async flowSetPowerfulMode(mode) {
+    return this._onSetPowerfulMode(mode);
+  }
+
+  async flowSetHolidayMode(on) {
+    return this._onSetHolidayMode(on);
+  }
+
+  // =========================================================================
+  //  Lifecycle
   // =========================================================================
 
   async onSettings({ changedKeys }) {

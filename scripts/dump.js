@@ -1,22 +1,21 @@
 'use strict';
 
 /**
- * Script de diagnostic : se connecte a Aquarea Smart Cloud et affiche le JSON
- * BRUT renvoye par l'API (liste des appareils + etat detaille de chaque PAC).
+ * Diagnostic script: logs in to Aquarea Smart Cloud and prints the RAW JSON
+ * returned by the API (device list + detailed state of each heat pump).
  *
- * But : voir exactement ce que Panasonic expose (ballon ECS / tankStatus,
- * unite exterieure / outdoorNow, zones, etc.) pour decider quoi remonter
- * dans Homey.
+ * Purpose: see exactly what Panasonic exposes (DHW tank / tankStatus, outdoor
+ * unit / outdoorNow, zones, etc.) in order to decide what to surface in Homey.
  *
- * Utilisation :
- *   AQUAREA_USER="mon.email@exemple.fr" AQUAREA_PASS="motdepasse" \
+ * Usage:
+ *   AQUAREA_USER="my.email@example.com" AQUAREA_PASS="password" \
  *     node scripts/dump.js
  *
- * ou en passant les identifiants en arguments :
- *   node scripts/dump.js "mon.email@exemple.fr" "motdepasse"
+ * or by passing the credentials as arguments:
+ *   node scripts/dump.js "my.email@example.com" "password"
  *
- * ⚠️  Utilise de preference le COMPTE DEDIE (cf. README §2). Chaque connexion
- *     peut invalider la session de l'app mobile.
+ * ⚠️  Preferably use the DEDICATED ACCOUNT (see README §2). Every login may
+ *     invalidate the mobile app session.
  */
 
 const AquareaClient = require('../lib/AquareaClient');
@@ -50,28 +49,28 @@ function show(title, obj) {
     await client.login();
     console.log('Connexion OK. clientId =', client.clientId);
 
-    // 1) Liste brute des appareils (device/group).
+    // 1) Raw device list (device/group).
     const devices = await client.getDevices();
     show('APPAREILS (getDevices, vue simplifiee)', devices.map(d => ({
       id: d.id, name: d.name, hasTank: d.hasTank,
     })));
     show('APPAREILS (raw device/group)', devices.map(d => d.raw));
 
-    // 2) Etat detaille brut de chaque appareil.
+    // 2) Raw detailed state of each device.
     for (const d of devices) {
-      // getDeviceData renvoie un objet mappe + le champ .raw = reponse complete.
+      // getDeviceData returns a mapped object + the .raw field = full response.
       const data = await client.getDeviceData(d.id);
-      // Tout ce que l'app remonte dans Homey, sauf la reponse brute.
+      // Everything the app surfaces in Homey, minus the raw response.
       const { raw, ...mapped } = data;
       show(`ETAT MAPPE — ${d.name} (${d.id})`, mapped);
       show(`ETAT BRUT (reponse API complete) — ${d.name}`, data.raw);
     }
 
-    // 3) Sondage des endpoints de consommation energetique (kWh).
-    //    On utilise _fetch() directement avec les headers Panasonic pour eviter
-    //    la boucle re-auth declenchee par _request() sur chaque 403.
-    //    Un 403 "Missing Authentication Token" = chemin inexistant dans l'API
-    //    Gateway ; ca ne signifie pas que le token est mauvais.
+    // 3) Probe the energy consumption endpoints (kWh).
+    //    We call _fetch() directly with the Panasonic headers, to avoid the
+    //    re-auth loop that _request() triggers on every 403.
+    //    A 403 "Missing Authentication Token" = path that does not exist in the
+    //    API Gateway; it does not mean the token is bad.
     console.log('\n--- Sondage endpoints consommation energetique ---');
     console.log('(HTTP 2xx = succes, 403/404 = chemin inexistant, rien de grave)\n');
 
@@ -95,26 +94,26 @@ function show(title, obj) {
       }
     }
 
-    // Date du jour au format YYYY-MM-DD.
+    // Today's date in YYYY-MM-DD format.
     const today = new Date().toISOString().slice(0, 10);
 
     for (const d of devices) {
       const guid = d.id;
       console.log(`\n== Appareil : ${d.name} (${guid}) ==`);
 
-      // Endpoint decouvert dans bisand/panasonic-comfort-cloud-api :
+      // Endpoint found in bisand/panasonic-comfort-cloud-api:
       //   POST /deviceHistoryData
-      //   Body : { deviceGuid, dataMode (0=Day,1=Week,2=Month,4=Year), date, osTimezone }
-      // On essaie les 4 modes pour voir ce que l'API renvoie pour une PAC Aquarea.
-      // Date au format YYYYMMDD (sans tirets).
+      //   Body: { deviceGuid, dataMode (0=Day,1=Week,2=Month,4=Year), date, osTimezone }
+      // We try all 4 modes to see what the API returns for an Aquarea heat pump.
+      // Date in YYYYMMDD format (no dashes).
       const todayCompact = today.replace(/-/g, '');
 
-      // D'apres cjaliaga/aioaquarea (consumption_manager.py) :
-      //   - endpoint Aquarea : POST remote/v1/app/common/transfer
-      //   - apiName : /remote/v1/api/consumption
-      //   - gwid (pas deviceGuid), dataMode : 0=Day 1=Month 2=Year
-      //   - date : YYYYMMDD
-      // La reponse contient historyDataList avec heatConsumption/coolConsumption/tankConsumption.
+      // Based on cjaliaga/aioaquarea (consumption_manager.py):
+      //   - Aquarea endpoint: POST remote/v1/app/common/transfer
+      //   - apiName: /remote/v1/api/consumption
+      //   - gwid (not deviceGuid), dataMode: 0=Day 1=Month 2=Year
+      //   - date: YYYYMMDD
+      // The response holds historyDataList with heat/cool/tankConsumption.
       const consumptionModes = [
         { label: 'Day (0)',   dataMode: 0 },
         { label: 'Month (1)', dataMode: 1 },
