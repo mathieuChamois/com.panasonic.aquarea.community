@@ -238,6 +238,26 @@
       },
       "icon": "/assets/capabilities/holiday_mode.svg"
     },
+    "cooling_mode": {
+      "type": "boolean",
+      "title": {
+        "en": "Cooling",
+        "fr": "Rafraichissement"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Switched to cooling",
+        "fr": "Passage en rafraichissement"
+      },
+      "insightsTitleFalse": {
+        "en": "Switched to heating",
+        "fr": "Passage en chauffage"
+      },
+      "icon": "/assets/capabilities/cooling_mode.svg"
+    },
     "force_dhw": {
       "type": "boolean",
       "title": {
@@ -380,17 +400,31 @@
           }
         },
         {
-          "id": "pump",
+          "id": "heating",
           "title": {
-            "en": "Heating / cooling",
-            "fr": "Chauffage / rafraichissement"
+            "en": "Heating",
+            "fr": "Chauffage"
           }
         },
         {
-          "id": "water",
+          "id": "cooling",
+          "title": {
+            "en": "Cooling",
+            "fr": "Rafraichissement"
+          }
+        },
+        {
+          "id": "hot_water",
           "title": {
             "en": "Hot water",
             "fr": "Eau chaude"
+          }
+        },
+        {
+          "id": "active",
+          "title": {
+            "en": "Heating / cooling",
+            "fr": "Chauffage ou rafraichissement"
           }
         },
         {
@@ -474,27 +508,34 @@
     }
   },
   "flow": {
-    "conditions": [
+    "triggers": [
       {
-        "id": "capability_is_true",
+        "id": "state_became_true",
         "title": {
-          "en": "Aquarea [[capability]] is active",
-          "fr": "Aquarea [[capability]] est actif"
+          "en": "Aquarea [[capability]] turned on",
+          "fr": "Aquarea [[capability]] active"
         },
         "titleFormatted": {
-          "en": "[[device]]: [[capability]] is active",
-          "fr": "[[device]] : [[capability]] est actif"
+          "en": "[[device]]: [[capability]] turned on",
+          "fr": "[[device]] : [[capability]] active"
         },
         "args": [
           {
             "name": "device",
             "type": "device",
-            "filter": "capabilities=pump_running|defrost_active|force_dhw|force_heater|bivalent_active|electric_anode|holiday_mode|convector_flap"
+            "filter": "capabilities=pump_running"
           },
           {
             "name": "capability",
             "type": "dropdown",
             "values": [
+              {
+                "id": "cooling_mode",
+                "title": {
+                  "en": "Cooling",
+                  "fr": "Rafraichissement"
+                }
+              },
               {
                 "id": "pump_running",
                 "title": {
@@ -545,6 +586,360 @@
                 }
               },
               {
+                "id": "onoff.tank",
+                "title": {
+                  "en": "Hot water tank",
+                  "fr": "Ballon ECS"
+                }
+              },
+              {
+                "id": "onoff.zone",
+                "title": {
+                  "en": "Heating zone",
+                  "fr": "Zone de chauffage"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "state_became_false",
+        "title": {
+          "en": "Aquarea [[capability]] turned off",
+          "fr": "Aquarea [[capability]] desactive"
+        },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] turned off",
+          "fr": "[[device]] : [[capability]] desactive"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "capability",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "cooling_mode",
+                "title": {
+                  "en": "Cooling",
+                  "fr": "Rafraichissement"
+                }
+              },
+              {
+                "id": "pump_running",
+                "title": {
+                  "en": "Circulation pump",
+                  "fr": "Circulateur"
+                }
+              },
+              {
+                "id": "defrost_active",
+                "title": {
+                  "en": "Defrosting",
+                  "fr": "Degivrage"
+                }
+              },
+              {
+                "id": "force_dhw",
+                "title": {
+                  "en": "Forced hot water",
+                  "fr": "Eau chaude forcee"
+                }
+              },
+              {
+                "id": "force_heater",
+                "title": {
+                  "en": "Backup heater",
+                  "fr": "Appoint electrique"
+                }
+              },
+              {
+                "id": "bivalent_active",
+                "title": {
+                  "en": "Bivalent source",
+                  "fr": "Source bivalente"
+                }
+              },
+              {
+                "id": "electric_anode",
+                "title": {
+                  "en": "Electric anode",
+                  "fr": "Anode electrique"
+                }
+              },
+              {
+                "id": "holiday_mode",
+                "title": {
+                  "en": "Holiday mode",
+                  "fr": "Mode vacances"
+                }
+              },
+              {
+                "id": "onoff.tank",
+                "title": {
+                  "en": "Hot water tank",
+                  "fr": "Ballon ECS"
+                }
+              },
+              {
+                "id": "onoff.zone",
+                "title": {
+                  "en": "Heating zone",
+                  "fr": "Zone de chauffage"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mode_changed",
+        "title": {
+          "en": "Aquarea [[capability]] changed",
+          "fr": "Aquarea [[capability]] a change"
+        },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] changed",
+          "fr": "[[device]] : [[capability]] a change"
+        },
+        "tokens": [
+          {
+            "name": "value",
+            "type": "string",
+            "title": {
+              "en": "New value",
+              "fr": "Nouvelle valeur"
+            },
+            "example": {
+              "en": "heat",
+              "fr": "heat"
+            }
+          },
+          {
+            "name": "previous",
+            "type": "string",
+            "title": {
+              "en": "Previous value",
+              "fr": "Valeur precedente"
+            },
+            "example": {
+              "en": "off",
+              "fr": "off"
+            }
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "capability",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "thermostat_mode",
+                "title": {
+                  "en": "Operation mode",
+                  "fr": "Mode de fonctionnement"
+                }
+              },
+              {
+                "id": "operation_direction",
+                "title": {
+                  "en": "Current operation",
+                  "fr": "Fonctionnement en cours"
+                }
+              },
+              {
+                "id": "special_status",
+                "title": {
+                  "en": "Eco / Comfort preset",
+                  "fr": "Prereglage Eco / Confort"
+                }
+              },
+              {
+                "id": "quiet_mode",
+                "title": {
+                  "en": "Quiet mode",
+                  "fr": "Mode silencieux"
+                }
+              },
+              {
+                "id": "powerful_mode",
+                "title": {
+                  "en": "Powerful mode",
+                  "fr": "Mode puissant"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "measurement_changed",
+        "title": {
+          "en": "Aquarea [[capability]] value changed",
+          "fr": "La valeur Aquarea [[capability]] a change"
+        },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] value changed",
+          "fr": "[[device]] : la valeur [[capability]] a change"
+        },
+        "tokens": [
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "New value",
+              "fr": "Nouvelle valeur"
+            },
+            "example": 1.8
+          },
+          {
+            "name": "previous",
+            "type": "number",
+            "title": {
+              "en": "Previous value",
+              "fr": "Valeur precedente"
+            },
+            "example": 1.9
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "capability",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "measure_water_pressure",
+                "title": {
+                  "en": "Water pressure",
+                  "fr": "Pression d'eau"
+                }
+              },
+              {
+                "id": "measure_water_temperature",
+                "title": {
+                  "en": "Water temperature",
+                  "fr": "Temperature d'eau"
+                }
+              },
+              {
+                "id": "measure_temperature.outdoor",
+                "title": {
+                  "en": "Outdoor temperature",
+                  "fr": "Temperature exterieure"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "capability_is_true",
+        "title": {
+          "en": "Aquarea [[capability]] is active",
+          "fr": "Aquarea [[capability]] est actif"
+        },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] is active",
+          "fr": "[[device]] : [[capability]] est actif"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running|defrost_active|force_dhw|force_heater|bivalent_active|electric_anode|holiday_mode|convector_flap"
+          },
+          {
+            "name": "capability",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "cooling_mode",
+                "title": {
+                  "en": "Cooling",
+                  "fr": "Rafraichissement"
+                }
+              },
+              {
+                "id": "pump_running",
+                "title": {
+                  "en": "Circulation pump",
+                  "fr": "Circulateur"
+                }
+              },
+              {
+                "id": "defrost_active",
+                "title": {
+                  "en": "Defrosting",
+                  "fr": "Degivrage"
+                }
+              },
+              {
+                "id": "force_dhw",
+                "title": {
+                  "en": "Forced hot water",
+                  "fr": "Eau chaude forcee"
+                }
+              },
+              {
+                "id": "force_heater",
+                "title": {
+                  "en": "Backup heater",
+                  "fr": "Appoint electrique"
+                }
+              },
+              {
+                "id": "bivalent_active",
+                "title": {
+                  "en": "Bivalent source",
+                  "fr": "Source bivalente"
+                }
+              },
+              {
+                "id": "electric_anode",
+                "title": {
+                  "en": "Electric anode",
+                  "fr": "Anode electrique"
+                }
+              },
+              {
+                "id": "holiday_mode",
+                "title": {
+                  "en": "Holiday mode",
+                  "fr": "Mode vacances"
+                }
+              },
+              {
+                "id": "onoff.tank",
+                "title": {
+                  "en": "Hot water tank",
+                  "fr": "Ballon ECS"
+                }
+              },
+              {
+                "id": "onoff.zone",
+                "title": {
+                  "en": "Heating zone",
+                  "fr": "Zone de chauffage"
+                }
+              },
+              {
                 "id": "convector_flap",
                 "title": {
                   "en": "Convector flap",
@@ -569,12 +964,19 @@
           {
             "name": "device",
             "type": "device",
-            "filter": "capabilities=operation_direction|special_status|quiet_mode|powerful_mode|convector_fan_speed"
+            "filter": "capabilities=operation_direction|special_status|quiet_mode|powerful_mode|thermostat_mode|convector_fan_speed"
           },
           {
             "name": "capability",
             "type": "dropdown",
             "values": [
+              {
+                "id": "thermostat_mode",
+                "title": {
+                  "en": "Operation mode",
+                  "fr": "Mode de fonctionnement"
+                }
+              },
               {
                 "id": "operation_direction",
                 "title": {
@@ -621,6 +1023,143 @@
             }
           }
         ]
+      },
+      {
+        "id": "measurement_compare",
+        "title": {
+          "en": "Aquarea [[capability]] is [[operator]] [[value]]",
+          "fr": "Aquarea [[capability]] est [[operator]] [[value]]"
+        },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] is [[operator]] [[value]]",
+          "fr": "[[device]] : [[capability]] est [[operator]] [[value]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "capability",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "measure_water_pressure",
+                "title": {
+                  "en": "Water pressure",
+                  "fr": "Pression d'eau"
+                }
+              },
+              {
+                "id": "measure_water_temperature",
+                "title": {
+                  "en": "Water temperature",
+                  "fr": "Temperature d'eau"
+                }
+              },
+              {
+                "id": "measure_temperature.outdoor",
+                "title": {
+                  "en": "Outdoor temperature",
+                  "fr": "Temperature exterieure"
+                }
+              },
+              {
+                "id": "target_temperature",
+                "title": {
+                  "en": "Main setpoint",
+                  "fr": "Consigne principale"
+                }
+              },
+              {
+                "id": "target_temperature.zone",
+                "title": {
+                  "en": "Zone setpoint / curve offset",
+                  "fr": "Consigne zone / decalage loi d'eau"
+                }
+              },
+              {
+                "id": "measure_temperature",
+                "title": {
+                  "en": "Main temperature",
+                  "fr": "Temperature principale"
+                }
+              },
+              {
+                "id": "measure_temperature.zone",
+                "title": {
+                  "en": "Zone temperature",
+                  "fr": "Temperature de zone"
+                }
+              },
+              {
+                "id": "meter_power.heat",
+                "title": {
+                  "en": "Heat energy today",
+                  "fr": "Energie chauffage aujourd'hui"
+                }
+              },
+              {
+                "id": "meter_power.cool",
+                "title": {
+                  "en": "Cool energy today",
+                  "fr": "Energie clim aujourd'hui"
+                }
+              },
+              {
+                "id": "meter_power.tank",
+                "title": {
+                  "en": "Tank energy today",
+                  "fr": "Energie ballon aujourd'hui"
+                }
+              }
+            ]
+          },
+          {
+            "name": "operator",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "gt",
+                "title": {
+                  "en": "greater than",
+                  "fr": "superieur a"
+                }
+              },
+              {
+                "id": "lt",
+                "title": {
+                  "en": "less than",
+                  "fr": "inferieur a"
+                }
+              },
+              {
+                "id": "gte",
+                "title": {
+                  "en": "greater than or equal to",
+                  "fr": "superieur ou egal a"
+                }
+              },
+              {
+                "id": "lte",
+                "title": {
+                  "en": "less than or equal to",
+                  "fr": "inferieur ou egal a"
+                }
+              }
+            ]
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Value",
+              "fr": "Valeur"
+            },
+            "step": 0.01
+          }
+        ]
       }
     ],
     "actions": [
@@ -631,14 +1170,14 @@
           "fr": "Regler la consigne zone / le decalage de loi d'eau sur [[value]]"
         },
         "titleFormatted": {
-          "en": "Set [[device]] zone setpoint / curve offset to [[value]]",
-          "fr": "Regler la consigne zone / le decalage de loi d'eau de [[device]] sur [[value]]"
+          "en": "Set [[device]] [[zone]] setpoint / curve offset to [[value]]",
+          "fr": "Regler la consigne / le decalage de [[zone]] de [[device]] sur [[value]]"
         },
         "args": [
           {
             "name": "device",
             "type": "device",
-            "filter": "capabilities=target_temperature.zone"
+            "filter": "capabilities=onoff.zone"
           },
           {
             "name": "value",
@@ -650,6 +1189,37 @@
             "min": -5,
             "max": 60,
             "step": 1
+          },
+          {
+            "name": "zone",
+            "type": "dropdown",
+            "title": {
+              "en": "Zone",
+              "fr": "Zone"
+            },
+            "values": [
+              {
+                "id": "main",
+                "title": {
+                  "en": "Main zone",
+                  "fr": "Zone principale"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Zone 1",
+                  "fr": "Zone 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Zone 2",
+                  "fr": "Zone 2"
+                }
+              }
+            ]
           }
         ]
       },
@@ -789,6 +1359,571 @@
                 "title": {
                   "en": "Off",
                   "fr": "Inactif"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_operation_mode",
+        "title": {
+          "en": "Set operation mode to [[mode]]",
+          "fr": "Regler le mode de fonctionnement sur [[mode]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] operation mode to [[mode]]",
+          "fr": "Regler le mode de fonctionnement de [[device]] sur [[mode]]"
+        },
+        "hint": {
+          "en": "Heating / cooling \"only\" cuts the hot water tank; the \"+ hot water\" variants allow it. Auto leaves the tank untouched.",
+          "fr": "Les modes \"seul\" coupent le ballon ECS, les modes \"+ eau chaude\" l'autorisent. Auto laisse le ballon inchange."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heating only",
+                  "fr": "Chauffage seul"
+                }
+              },
+              {
+                "id": "heat_tank",
+                "title": {
+                  "en": "Heating + hot water",
+                  "fr": "Chauffage + eau chaude"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cooling only",
+                  "fr": "Rafraichissement seul"
+                }
+              },
+              {
+                "id": "cool_tank",
+                "title": {
+                  "en": "Cooling + hot water",
+                  "fr": "Rafraichissement + eau chaude"
+                }
+              },
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto",
+                  "fr": "Auto"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Arret"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_power",
+        "title": {
+          "en": "Turn the heat pump [[state]]",
+          "fr": "Mettre la pompe a chaleur sur [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Turn [[device]] [[state]]",
+          "fr": "Mettre [[device]] sur [[state]]"
+        },
+        "hint": {
+          "en": "Turns the unit on or off without changing the operation mode, unlike the operation mode card.",
+          "fr": "Allume ou eteint l'unite sans toucher au mode de fonctionnement, contrairement a la carte mode."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_cooling_mode",
+        "title": {
+          "en": "Switch to [[mode]]",
+          "fr": "Passer en [[mode]]"
+        },
+        "titleFormatted": {
+          "en": "Switch [[device]] to [[mode]]",
+          "fr": "Passer [[device]] en [[mode]]"
+        },
+        "hint": {
+          "en": "Keeps the hot water tank in its current state, and starts the heat pump if it was off.",
+          "fr": "Conserve l'etat du ballon ECS, et demarre la pompe a chaleur si elle etait a l'arret."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=cooling_mode"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heating",
+                  "fr": "Chauffage"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cooling",
+                  "fr": "Rafraichissement"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "adjust_zone_setpoint",
+        "title": {
+          "en": "Adjust zone setpoint / curve offset by [[delta]]",
+          "fr": "Ajuster la consigne zone / le decalage de loi d'eau de [[delta]]"
+        },
+        "titleFormatted": {
+          "en": "Adjust [[device]] [[zone]] setpoint / curve offset by [[delta]]",
+          "fr": "Ajuster la consigne / le decalage de [[zone]] de [[device]] de [[delta]]"
+        },
+        "hint": {
+          "en": "Relative change, clamped to the range reported by the heat pump. Main zone only.",
+          "fr": "Variation relative, bornee a la plage remontee par la PAC. Zone principale uniquement."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "delta",
+            "type": "number",
+            "title": {
+              "en": "Change",
+              "fr": "Ecart"
+            },
+            "min": -20,
+            "max": 20,
+            "step": 1
+          },
+          {
+            "name": "zone",
+            "type": "dropdown",
+            "title": {
+              "en": "Zone",
+              "fr": "Zone"
+            },
+            "values": [
+              {
+                "id": "main",
+                "title": {
+                  "en": "Main zone",
+                  "fr": "Zone principale"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Zone 1",
+                  "fr": "Zone 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Zone 2",
+                  "fr": "Zone 2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_zone_cool_setpoint",
+        "title": {
+          "en": "Set zone cooling setpoint to [[value]]",
+          "fr": "Regler la consigne de rafraichissement de zone sur [[value]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] [[zone]] cooling setpoint to [[value]]",
+          "fr": "Regler la consigne de rafraichissement de [[zone]] de [[device]] sur [[value]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Setpoint / offset",
+              "fr": "Consigne / decalage"
+            },
+            "min": -5,
+            "max": 40,
+            "step": 1
+          },
+          {
+            "name": "zone",
+            "type": "dropdown",
+            "title": {
+              "en": "Zone",
+              "fr": "Zone"
+            },
+            "values": [
+              {
+                "id": "main",
+                "title": {
+                  "en": "Main zone",
+                  "fr": "Zone principale"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Zone 1",
+                  "fr": "Zone 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Zone 2",
+                  "fr": "Zone 2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_zone_onoff",
+        "title": {
+          "en": "Turn heating zone [[state]]",
+          "fr": "Mettre la zone de chauffage sur [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Turn [[device]] [[zone]] [[state]]",
+          "fr": "Mettre [[zone]] de [[device]] sur [[state]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif"
+                }
+              }
+            ]
+          },
+          {
+            "name": "zone",
+            "type": "dropdown",
+            "title": {
+              "en": "Zone",
+              "fr": "Zone"
+            },
+            "values": [
+              {
+                "id": "main",
+                "title": {
+                  "en": "Main zone",
+                  "fr": "Zone principale"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Zone 1",
+                  "fr": "Zone 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Zone 2",
+                  "fr": "Zone 2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_tank_setpoint",
+        "title": {
+          "en": "Set hot water tank setpoint to [[value]]",
+          "fr": "Regler la consigne du ballon ECS sur [[value]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] hot water tank setpoint to [[value]]",
+          "fr": "Regler la consigne du ballon ECS de [[device]] sur [[value]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=onoff.tank"
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Setpoint",
+              "fr": "Consigne"
+            },
+            "min": 20,
+            "max": 75,
+            "step": 1
+          }
+        ]
+      },
+      {
+        "id": "set_tank_onoff",
+        "title": {
+          "en": "Turn the hot water tank [[state]]",
+          "fr": "Mettre le ballon ECS sur [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Turn [[device]] hot water tank [[state]]",
+          "fr": "Mettre le ballon ECS de [[device]] sur [[state]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=onoff.tank"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_force_dhw",
+        "title": {
+          "en": "Set forced hot water [[state]]",
+          "fr": "Mettre l'eau chaude forcee sur [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] forced hot water [[state]]",
+          "fr": "Mettre l'eau chaude forcee de [[device]] sur [[state]]"
+        },
+        "hint": {
+          "en": "One-shot boost: the heat pump clears it by itself once the tank setpoint is reached.",
+          "fr": "Impulsion : la PAC annule le forcage seule des que la consigne du ballon est atteinte."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=force_dhw"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_force_heater",
+        "title": {
+          "en": "Set the backup heater [[state]]",
+          "fr": "Mettre l'appoint electrique sur [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] backup heater [[state]]",
+          "fr": "Mettre l'appoint electrique de [[device]] sur [[state]]"
+        },
+        "hint": {
+          "en": "Direct electric heating, with no COP. Use sparingly.",
+          "fr": "Chauffage electrique direct, sans COP. A utiliser avec parcimonie."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=force_heater"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "request_defrost",
+        "title": {
+          "en": "Start a manual defrost",
+          "fr": "Lancer un degivrage manuel"
+        },
+        "titleFormatted": {
+          "en": "Start a manual defrost on [[device]]",
+          "fr": "Lancer un degivrage manuel sur [[device]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=defrost_active"
+          }
+        ]
+      },
+      {
+        "id": "set_special_status",
+        "title": {
+          "en": "Set the Eco / Comfort preset to [[status]]",
+          "fr": "Regler le prereglage Eco / Confort sur [[status]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] Eco / Comfort preset to [[status]]",
+          "fr": "Regler le prereglage Eco / Confort de [[device]] sur [[status]]"
+        },
+        "hint": {
+          "en": "Applies the Eco / Comfort offsets configured on the heat pump remote control.",
+          "fr": "Applique les decalages Eco / Confort configures sur la telecommande de la PAC."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=special_status"
+          },
+          {
+            "name": "status",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "normal",
+                "title": {
+                  "en": "Normal",
+                  "fr": "Normal"
+                }
+              },
+              {
+                "id": "eco",
+                "title": {
+                  "en": "Eco",
+                  "fr": "Eco"
+                }
+              },
+              {
+                "id": "comfort",
+                "title": {
+                  "en": "Comfort",
+                  "fr": "Confort"
                 }
               }
             ]
@@ -1039,6 +2174,8 @@
       "class": "thermostat",
       "uiIndicator": "measure_temperature",
       "capabilities": [
+        "thermostat_mode",
+        "cooling_mode",
         "target_temperature.zone",
         "target_temperature",
         "onoff.tank",

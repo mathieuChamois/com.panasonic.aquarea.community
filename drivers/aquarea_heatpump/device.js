@@ -27,6 +27,7 @@ const POST_COMMAND_REFRESH_MS = 90 * 1000;
 // une capability qui ne represente pas la meme grandeur.
 const FALLBACK_CURVE_OFFSET_RANGE = { min: -5, max: 5, step: 1 };
 const FALLBACK_WATER_SETPOINT_RANGE = { min: 20, max: 60, step: 1 };
+const FALLBACK_WATER_COOL_RANGE = { min: 5, max: 25, step: 1 };
 const FALLBACK_TANK_RANGE = { min: 40, max: 65, step: 1 };
 
 // Capabilities pilotables -> methode de gestion de la commande.
@@ -34,6 +35,7 @@ const COMMAND_HANDLERS = {
   'target_temperature': '_onSetTargetTemperature',
   'target_temperature.zone': '_onSetZoneTemperature',
   'thermostat_mode': '_onCapabilityThermostatMode',
+  'cooling_mode': '_onSetCoolingMode',
   'onoff.tank': '_onSetTankOnoff',
   'onoff.zone': '_onSetZoneOnoff',
   'quiet_mode': '_onSetQuietMode',
@@ -62,6 +64,13 @@ class AquareaDevice extends Homey.Device {
 
     // Zone active (mise a jour a chaque poll). Defaut : 1.
     this.zoneId = 1;
+
+    // Sens de fonctionnement courant. Il decide quelle consigne de zone la
+    // tuile affiche et quel champ une commande de consigne ecrit : heatSet en
+    // chauffage, coolSet en rafraichissement. Conserve entre deux demarrages,
+    // sinon la tuile afficherait la consigne de chauffage sur une PAC en froid
+    // jusqu'au premier poll.
+    this._cooling = Boolean(this.getStoreValue('cooling'));
 
     // Cache optimiste : capability -> { value, until }. Voir _commit().
     this._optimistic = new Map();
@@ -175,6 +184,9 @@ class AquareaDevice extends Homey.Device {
     return {
       hasTank,
       hasBivalent: Boolean(data.config && data.config.bivalent),
+      // coolMode = 0 sur une PAC chauffage seul : inutile d'afficher un
+      // interrupteur chaud/froid qui ne pourrait rien commander.
+      hasCooling: Boolean(data.config && data.config.coolMode),
       zoneIsWater,
       zoneIsOffset,
       // Le ballon ECS, s'il existe, occupe les capabilities principales.
@@ -197,6 +209,7 @@ class AquareaDevice extends Homey.Device {
     const { hasTank, hasBivalent } = layout;
     const caps = [];
 
+    if (layout.hasCooling) caps.push('cooling_mode');
     caps.push(layout.zoneSetpointCap);
     if (layout.tankSetpointCap) caps.push(layout.tankSetpointCap);
     if (hasTank) caps.push('onoff.tank');
@@ -247,7 +260,7 @@ class AquareaDevice extends Homey.Device {
       + `zoneSensor=${layout.zoneIsWater ? 'water' : 'room'} `
       + `zoneSetpoint=${layout.zoneIsOffset ? 'curve offset' : 'absolute'}`);
     this._listeners.clear();
-    this._rangesApplied = false;
+    this._rangesSignature = null;
 
     for (const cap of current) {
       try { await this.removeCapability(cap); } catch (err) { this.error(`removeCapability(${cap})`, err.message); }
@@ -317,11 +330,21 @@ class AquareaDevice extends Homey.Device {
 
       if (data.zoneId != null) this.zoneId = data.zoneId;
 
+      // Identifiants de toutes les zones : les cartes Flow permettent de viser
+      // une zone secondaire, que les capabilities (mono-zone) n'exposent pas.
+      this._zoneIds = (data.zones || [])
+        .map(z => Number(z.zoneId))
+        .filter(n => Number.isFinite(n));
+
       // Le materiel reellement present peut differer de ce qu'on croyait :
       // on recompose la carte avant d'ecrire les valeurs.
       await this._applyLayout(data);
 
-      // Ajuste une seule fois les plages min/max reelles remontees par l'API.
+      // Sens de fonctionnement : conditionne la consigne de zone (heatSet ou
+      // coolSet) et donc les plages. A resoudre avant _applyRanges().
+      await this._applyDirection(data);
+
+      // Ajuste les plages min/max reelles remontees par l'API.
       await this._applyRanges(data);
 
       const layout = this._layout;
@@ -331,7 +354,8 @@ class AquareaDevice extends Homey.Device {
         await this._setCapability('onoff.tank', data.tankOn);
       }
       await this._setCapability(layout.zoneTempCap, data.zoneTemperature);
-      await this._setCapability(layout.zoneSetpointCap, data.zoneHeatSet);
+      await this._setCapability(layout.zoneSetpointCap,
+        this._cooling ? data.zoneCoolSet : data.zoneHeatSet);
       await this._setCapability('onoff.zone', data.zoneOn);
 
       // Systeme.
@@ -339,6 +363,7 @@ class AquareaDevice extends Homey.Device {
       await this._setCapability('measure_water_pressure', data.waterPressure);
       await this._setCapability('pump_running', data.pumpRunning);
       await this._setCapability('thermostat_mode', data.thermostatMode);
+      await this._setCapability('cooling_mode', data.isCooling);
 
       // Etats de fonctionnement.
       await this._setCapability('operation_direction', data.direction);
@@ -405,10 +430,22 @@ class AquareaDevice extends Homey.Device {
     if (value === null || typeof value === 'undefined') return;
     if (!this.hasCapability(cap)) return;
     if (!force && this._isMasked(cap, value)) return;
+
+    // Releve avant ecriture : c'est le seul point de passage des valeurs, donc
+    // le bon endroit pour declencher les cartes Flow sur changement d'etat.
+    const previous = this.getCapabilityValue(cap);
+
     try {
       await this.setCapabilityValue(cap, value);
     } catch (err) {
       this.error(`setCapabilityValue(${cap}) failed:`, err.message);
+      return;
+    }
+
+    // `previous === null` = premiere valeur connue apres (re)demarrage : ce
+    // n'est pas un changement d'etat du materiel, on ne declenche pas.
+    if (previous !== null && typeof previous !== 'undefined' && !this._sameValue(previous, value)) {
+      this.homey.app.triggerCapabilityChange(this, cap, value, previous);
     }
   }
 
@@ -461,40 +498,83 @@ class AquareaDevice extends Homey.Device {
     if (JSON.stringify(layout) === JSON.stringify(this._layout)) return;
 
     this._layout = layout;
-    this._rangesApplied = false;
+    this._rangesSignature = null;
     await this.setStoreValue('layout', layout);
     await this._syncCapabilities(layout);
   }
 
   /**
-   * Applique (une seule fois) les plages min/max reelles de l'appareil aux
-   * capabilities de consigne, d'apres heatMin/heatMax remontes par l'API.
+   * Met a jour le sens de fonctionnement (chaud / froid).
+   *
+   * Aquarea tient deux consignes de zone independantes, heatSet et coolSet.
+   * Une seule a un sens a un instant donne : la tuile de consigne et les
+   * commandes doivent suivre celle du sens courant, sinon l'utilisateur regle
+   * la consigne de chauffage en croyant regler celle du rafraichissement.
+   *
+   * `isCooling` vaut null quand la machine est a l'arret : on conserve alors
+   * le dernier sens connu plutot que de retomber sur "chauffage".
+   */
+  async _applyDirection(data) {
+    if (data.isCooling === null || typeof data.isCooling === 'undefined') return;
+    if (data.isCooling === this._cooling) return;
+
+    this.log(`Direction changed: ${this._cooling ? 'cooling' : 'heating'} -> ${data.isCooling ? 'cooling' : 'heating'}`);
+    this._cooling = data.isCooling;
+    await this.setStoreValue('cooling', this._cooling);
+
+    // La consigne affichee change de grandeur : une valeur optimiste heritee
+    // de l'autre sens masquerait la bonne valeur pendant tout son TTL.
+    this._optimistic.delete(this._layout.zoneSetpointCap);
+    // Libelle, unites et bornes different entre chaud et froid.
+    this._rangesSignature = null;
+  }
+
+  /**
+   * Applique les plages min/max reelles de l'appareil aux capabilities de
+   * consigne, d'apres heatMin/heatMax (ou coolMin/coolMax) remontes par l'API.
    *
    * La consigne de zone est soit une temperature d'eau absolue, soit un
    * decalage de loi d'eau (plage typique -5..+5) : le libelle suit.
    */
   async _applyRanges(data) {
-    if (this._rangesApplied) return;
     const layout = this._layout;
+    const cooling = this._cooling;
 
     // Un decalage de loi d'eau s'exprime en kelvins, pas en degres absolus.
-    const zoneLabel = layout.zoneIsOffset
-      ? { en: 'Zone curve offset', fr: "Decalage loi d'eau zone" }
-      : { en: 'Zone water setpoint', fr: "Consigne d'eau zone" };
+    let zoneLabel;
+    if (layout.zoneIsOffset) {
+      zoneLabel = cooling
+        ? { en: 'Zone cooling curve offset', fr: "Decalage loi d'eau froid zone" }
+        : { en: 'Zone curve offset', fr: "Decalage loi d'eau zone" };
+    } else {
+      zoneLabel = cooling
+        ? { en: 'Zone cooling setpoint', fr: 'Consigne froid zone' }
+        : { en: 'Zone water setpoint', fr: "Consigne d'eau zone" };
+    }
     const zoneUnits = layout.zoneIsOffset ? { en: 'K', fr: 'K' } : { en: '°C', fr: '°C' };
 
     // ⚠️  Si l'API ne remonte pas de plage, il FAUT quand meme envoyer min/max :
     //     sinon les bornes du manifeste (40-65 °C, prevues pour le ballon)
-    //     restent en place sur une consigne de zone, et `_rangesApplied` fait
-    //     qu'on ne repassera jamais corriger. On envoie donc toujours un jeu
-    //     complet title + units + min/max/step, ce qui est aussi sur que
+    //     restent en place sur une consigne de zone. On envoie donc toujours un
+    //     jeu complet title + units + min/max/step, ce qui est aussi sur que
     //     setCapabilityOptions remplace ou fusionne les options existantes.
-    const zoneRange = data.zoneHeatMin != null && data.zoneHeatMax != null
-      ? { min: data.zoneHeatMin, max: data.zoneHeatMax, step: 1 }
-      : (layout.zoneIsOffset ? FALLBACK_CURVE_OFFSET_RANGE : FALLBACK_WATER_SETPOINT_RANGE);
+    const zoneMin = cooling ? data.zoneCoolMin : data.zoneHeatMin;
+    const zoneMax = cooling ? data.zoneCoolMax : data.zoneHeatMax;
+    let zoneFallback;
+    if (layout.zoneIsOffset) zoneFallback = FALLBACK_CURVE_OFFSET_RANGE;
+    else zoneFallback = cooling ? FALLBACK_WATER_COOL_RANGE : FALLBACK_WATER_SETPOINT_RANGE;
+
+    const zoneRange = zoneMin != null && zoneMax != null
+      ? { min: zoneMin, max: zoneMax, step: 1 }
+      : zoneFallback;
     const tankRange = data.tankHeatMin != null && data.tankHeatMax != null
       ? { min: data.tankHeatMin, max: data.tankHeatMax, step: 1 }
       : FALLBACK_TANK_RANGE;
+
+    // Ces options ne bougent qu'a un changement de sens ou de disposition :
+    // les reecrire a chaque poll ferait clignoter la carte pour rien.
+    const signature = JSON.stringify({ cooling, zoneLabel, zoneRange, tankRange, layout });
+    if (signature === this._rangesSignature) return;
 
     const jobs = [];
     if (this.hasCapability(layout.zoneSetpointCap)) {
@@ -551,7 +631,7 @@ class AquareaDevice extends Homey.Device {
     if (!jobs.length) return;
     try {
       await Promise.all(jobs);
-      this._rangesApplied = true;
+      this._rangesSignature = signature;
     } catch (err) {
       this.error('applyRanges failed:', err.message);
     }
@@ -632,6 +712,18 @@ class AquareaDevice extends Homey.Device {
   }
 
   /**
+   * Ecrit la consigne de zone sur le champ correspondant au sens courant.
+   *
+   * heatSet et coolSet sont deux reglages distincts cote Aquarea : ecrire
+   * heatSet alors que la PAC rafraichit ne changerait rien de visible et
+   * modifierait silencieusement la consigne de la saison suivante.
+   */
+  async _writeZoneSetpoint(value, zoneId) {
+    if (this._cooling) return this.client.setZoneCoolTemperature(this.deviceId, value, zoneId);
+    return this.client.setZoneTemperature(this.deviceId, value, zoneId);
+  }
+
+  /**
    * `target_temperature` porte le ballon ECS quand il y en a un, et sinon la
    * consigne d'eau de la zone (jamais un decalage de loi d'eau : celui-ci vit
    * sur `target_temperature.zone`). Voir _computeLayout().
@@ -642,17 +734,18 @@ class AquareaDevice extends Homey.Device {
       this.log(`Command: tank setpoint -> ${rounded}`);
       await this.client.setTankTemperature(this.deviceId, rounded);
     } else {
-      this.log(`Command: zone setpoint -> ${rounded} (zone ${this.zoneId})`);
-      await this.client.setZoneTemperature(this.deviceId, rounded, this.zoneId);
+      this.log(`Command: zone ${this._cooling ? 'cool' : 'heat'} setpoint -> ${rounded} (zone ${this.zoneId})`);
+      await this._writeZoneSetpoint(rounded, this.zoneId);
     }
     await this._commit('target_temperature', rounded);
     this._refreshSoon();
   }
 
   async _onSetZoneTemperature(value) {
-    this.log(`Command: zone setpoint/offset -> ${value} (zone ${this.zoneId})`);
-    await this.client.setZoneTemperature(this.deviceId, value, this.zoneId);
-    await this._commit('target_temperature.zone', Math.round(Number(value)));
+    const rounded = Math.round(Number(value));
+    this.log(`Command: zone ${this._cooling ? 'cool' : 'heat'} setpoint/offset -> ${rounded} (zone ${this.zoneId})`);
+    await this._writeZoneSetpoint(rounded, this.zoneId);
+    await this._commit('target_temperature.zone', rounded);
     this._refreshSoon();
   }
 
@@ -660,6 +753,14 @@ class AquareaDevice extends Homey.Device {
     this.log(`Command: thermostat_mode -> ${value}`);
     await this.client.setMode(this.deviceId, value);
     await this._commit('thermostat_mode', value);
+
+    // L'interrupteur chaud/froid est une vue du mode : il doit suivre, ainsi
+    // que le sens qui decide de la consigne de zone affichee et pilotee.
+    const cooling = this._coolingFromMode(value);
+    if (cooling !== null) {
+      await this._applyDirection({ isCooling: cooling });
+      await this._commit('cooling_mode', cooling);
+    }
 
     // setMode() pilote aussi la zone et l'autorisation ECS : on aligne les
     // interrupteurs sur ce qui vient d'etre envoye (cf. AquareaClient.setMode).
@@ -728,6 +829,48 @@ class AquareaDevice extends Homey.Device {
     this._refreshSoon();
   }
 
+  /**
+   * Interrupteur chaud/froid derive du mode de fonctionnement.
+   *
+   * `off` et `auto` ne sont ni l'un ni l'autre : on renvoie null, ce qui laisse
+   * l'interrupteur sur sa derniere position au lieu de le forcer sur
+   * "chauffage" (ce qui laisserait croire que la PAC va chauffer).
+   */
+  _coolingFromMode(mode) {
+    if (mode === 'cool' || mode === 'cool_tank') return true;
+    if (mode === 'heat' || mode === 'heat_tank') return false;
+    return null;
+  }
+
+  /**
+   * Bascule chaud <-> froid en conservant l'autorisation ECS courante :
+   * `heat_tank` devient `cool_tank`, `heat` devient `cool`.
+   *
+   * ⚠️  setMode() rallume la machine (operationStatus = 1) : basculer
+   *     l'interrupteur alors que la PAC est a l'arret la redemarre.
+   */
+  async _onSetCoolingMode(value) {
+    const cooling = Boolean(value);
+    // On se base sur l'etat du ballon plutot que sur le mode courant : en
+    // 'auto' ou 'off', le mode ne dit rien de l'autorisation ECS.
+    const tankOn = this._layout.hasTank && this.getCapabilityValue('onoff.tank') === true;
+    const mode = cooling
+      ? (tankOn ? 'cool_tank' : 'cool')
+      : (tankOn ? 'heat_tank' : 'heat');
+
+    this.log(`Command: cooling_mode -> ${cooling} (mode ${mode})`);
+    await this.client.setMode(this.deviceId, mode);
+
+    // Le sens change tout de suite : sans cela, une consigne reglee juste
+    // apres la bascule partirait encore sur le champ de l'ancien sens.
+    await this._applyDirection({ isCooling: cooling });
+
+    await this._commit('cooling_mode', cooling);
+    await this._commit('thermostat_mode', mode);
+    await this._commit('onoff.zone', true);
+    this._refreshSoon();
+  }
+
   async _onSetQuietMode(value) {
     this.log(`Command: quiet mode -> ${value}`);
     await this.client.setQuietMode(this.deviceId, value);
@@ -748,6 +891,171 @@ class AquareaDevice extends Homey.Device {
     await this.client.setHolidayMode(this.deviceId, on);
     await this._commit('holiday_mode', on);
     this._refreshSoon();
+  }
+
+  // =========================================================================
+  //  Commandes exposees aux cartes Flow
+  //
+  //  Les capabilities ne couvrent que la zone principale et n'exposent pas les
+  //  commandes "impulsion" (forcage ECS, appoint, degivrage). Ces methodes
+  //  sont le point d'entree des cartes Flow, cf. app.js. Elles suivent la meme
+  //  discipline que les ecouteurs de capability : commande -> _commit ->
+  //  rafraichissement differe.
+  // =========================================================================
+
+  /**
+   * Resout l'argument "zone" d'une carte Flow.
+   * `main` (ou absent) = la zone principale suivie par les capabilities.
+   */
+  _resolveZoneId(zone) {
+    if (zone === undefined || zone === null || zone === '' || zone === 'main') return this.zoneId;
+    const n = Number(zone);
+    if (!Number.isFinite(n)) return this.zoneId;
+    if (this._zoneIds && this._zoneIds.length && !this._zoneIds.includes(n)) {
+      throw new Error(this.homey.__('error.unknown_zone', { zone: n }));
+    }
+    return n;
+  }
+
+  /** Une commande sur une zone secondaire ne doit pas ecraser les tuiles. */
+  async _commitIfMainZone(cap, value, zoneId) {
+    if (zoneId !== this.zoneId) return;
+    await this._commit(cap, value);
+  }
+
+  async flowSetOperationMode(mode) {
+    return this._onCapabilityThermostatMode(mode);
+  }
+
+  /** Bascule chaud/froid, sans avoir a choisir la variante "+ eau chaude". */
+  async flowSetCoolingMode(cooling) {
+    if (!this._layout.hasCooling) throw new Error(this.homey.__('error.no_cooling'));
+    return this._onSetCoolingMode(cooling);
+  }
+
+  /** Marche/arret general, sans reinitialiser le mode ni l'autorisation ECS. */
+  async flowSetPower(on) {
+    this.log(`Flow: power -> ${on}`);
+    await this.client.setOperationStatus(this.deviceId, on);
+    if (!on) await this._commit('thermostat_mode', 'off');
+    this._refreshSoon();
+  }
+
+  async flowSetZoneSetpoint(value, zone) {
+    const zoneId = this._resolveZoneId(zone);
+    const v = Math.round(Number(value));
+    if (!Number.isFinite(v)) throw new Error('Invalid setpoint');
+    this.log(`Flow: zone ${zoneId} ${this._cooling ? 'cool' : 'heat'} setpoint -> ${v}`);
+    await this._writeZoneSetpoint(v, zoneId);
+    await this._commitIfMainZone(this._layout.zoneSetpointCap, v, zoneId);
+    this._refreshSoon();
+  }
+
+  /**
+   * Ajustement relatif de la consigne de zone (+1 K, -2 K, ...).
+   * Utile pour les Flows de delestage / effacement tarifaire.
+   */
+  async flowAdjustZoneSetpoint(delta, zone) {
+    const zoneId = this._resolveZoneId(zone);
+    const cap = this._layout.zoneSetpointCap;
+    const current = this.getCapabilityValue(cap);
+    if (current === null || typeof current === 'undefined') {
+      throw new Error(this.homey.__('error.no_current_setpoint'));
+    }
+    if (zoneId !== this.zoneId) {
+      // Sans capability pour les zones secondaires, on n'a pas de valeur de
+      // reference fiable : mieux vaut refuser que d'appliquer un mauvais ecart.
+      throw new Error(this.homey.__('error.relative_main_zone_only'));
+    }
+
+    // Les bornes reelles viennent de _applyRanges() ; on s'y tient pour ne pas
+    // envoyer une consigne que la PAC refusera silencieusement.
+    let opts = {};
+    try { opts = this.getCapabilityOptions(cap) || {}; } catch (err) { /* bornes du manifeste */ }
+
+    let target = Math.round(Number(current) + Number(delta));
+    if (typeof opts.min === 'number') target = Math.max(opts.min, target);
+    if (typeof opts.max === 'number') target = Math.min(opts.max, target);
+
+    this.log(`Flow: zone ${zoneId} setpoint ${current} ${delta >= 0 ? '+' : ''}${delta} -> ${target}`);
+    await this._writeZoneSetpoint(target, zoneId);
+    await this._commit(cap, target);
+    this._refreshSoon();
+  }
+
+  async flowSetZoneCoolSetpoint(value, zone) {
+    const zoneId = this._resolveZoneId(zone);
+    const v = Math.round(Number(value));
+    if (!Number.isFinite(v)) throw new Error('Invalid setpoint');
+    this.log(`Flow: zone ${zoneId} cool setpoint -> ${v}`);
+    await this.client.setZoneCoolTemperature(this.deviceId, v, zoneId);
+    // La tuile de consigne porte coolSet uniquement quand la PAC rafraichit ;
+    // sinon cette carte pre-regle la saison froide sans rien afficher.
+    if (this._cooling) await this._commitIfMainZone(this._layout.zoneSetpointCap, v, zoneId);
+    this._refreshSoon();
+  }
+
+  async flowSetZoneOnoff(on, zone) {
+    const zoneId = this._resolveZoneId(zone);
+    if (zoneId === this.zoneId) return this._onSetZoneOnoff(on);
+    this.log(`Flow: zone ${zoneId} on/off -> ${on}`);
+    await this.client.setZoneOperation(this.deviceId, on, zoneId);
+    this._refreshSoon();
+  }
+
+  async flowSetTankSetpoint(value) {
+    if (!this._layout.hasTank) throw new Error(this.homey.__('error.no_tank'));
+    const v = Math.round(Number(value));
+    if (!Number.isFinite(v)) throw new Error('Invalid setpoint');
+    this.log(`Flow: tank setpoint -> ${v}`);
+    await this.client.setTankTemperature(this.deviceId, v);
+    await this._commit(this._layout.tankSetpointCap, v);
+    this._refreshSoon();
+  }
+
+  async flowSetTankOnoff(on) {
+    if (!this._layout.hasTank) throw new Error(this.homey.__('error.no_tank'));
+    return this._onSetTankOnoff(on);
+  }
+
+  async flowSetForceDhw(on) {
+    if (!this._layout.hasTank) throw new Error(this.homey.__('error.no_tank'));
+    this.log(`Flow: force DHW -> ${on}`);
+    await this.client.setForceDhw(this.deviceId, on);
+    await this._commit('force_dhw', Boolean(on));
+    this._refreshSoon();
+  }
+
+  async flowSetForceHeater(on) {
+    this.log(`Flow: force backup heater -> ${on}`);
+    await this.client.setForceHeater(this.deviceId, on);
+    await this._commit('force_heater', Boolean(on));
+    this._refreshSoon();
+  }
+
+  async flowRequestDefrost() {
+    this.log('Flow: manual defrost requested');
+    await this.client.requestDefrost(this.deviceId);
+    this._refreshSoon();
+  }
+
+  async flowSetSpecialStatus(status) {
+    this.log(`Flow: special status -> ${status}`);
+    await this.client.setSpecialStatus(this.deviceId, status);
+    await this._commit('special_status', status);
+    this._refreshSoon();
+  }
+
+  async flowSetQuietMode(mode) {
+    return this._onSetQuietMode(mode);
+  }
+
+  async flowSetPowerfulMode(mode) {
+    return this._onSetPowerfulMode(mode);
+  }
+
+  async flowSetHolidayMode(on) {
+    return this._onSetHolidayMode(on);
   }
 
   // =========================================================================
