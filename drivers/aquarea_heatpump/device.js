@@ -34,6 +34,7 @@ const COMMAND_HANDLERS = {
   'target_temperature': '_onSetTargetTemperature',
   'target_temperature.zone': '_onSetZoneTemperature',
   'thermostat_mode': '_onCapabilityThermostatMode',
+  'onoff': '_onSetHeatpumpOnoff',
   'onoff.tank': '_onSetTankOnoff',
   'onoff.zone': '_onSetZoneOnoff',
   'quiet_mode': '_onSetQuietMode',
@@ -200,6 +201,7 @@ class AquareaDevice extends Homey.Device {
     caps.push(layout.zoneSetpointCap);
     if (layout.tankSetpointCap) caps.push(layout.tankSetpointCap);
     if (hasTank) caps.push('onoff.tank');
+    caps.push('onoff');
     caps.push('onoff.zone');
     if (layout.tankTempCap) caps.push(layout.tankTempCap);
     caps.push(layout.zoneTempCap);
@@ -339,6 +341,7 @@ class AquareaDevice extends Homey.Device {
       await this._setCapability('measure_water_pressure', data.waterPressure);
       await this._setCapability('pump_running', data.pumpRunning);
       await this._setCapability('thermostat_mode', data.thermostatMode);
+      await this._setCapability('onoff', data.thermostatMode !== 'off');
 
       // Etats de fonctionnement.
       await this._setCapability('operation_direction', data.direction);
@@ -660,6 +663,7 @@ class AquareaDevice extends Homey.Device {
     this.log(`Command: thermostat_mode -> ${value}`);
     await this.client.setMode(this.deviceId, value);
     await this._commit('thermostat_mode', value);
+    await this._commit('onoff', value !== 'off');
 
     // setMode() pilote aussi la zone et l'autorisation ECS : on aligne les
     // interrupteurs sur ce qui vient d'etre envoye (cf. AquareaClient.setMode).
@@ -668,6 +672,18 @@ class AquareaDevice extends Homey.Device {
       if (value === 'heat_tank' || value === 'cool_tank' || value === 'dhw') await this._commit('onoff.tank', true);
       else if (value === 'heat' || value === 'cool') await this._commit('onoff.tank', false);
     }
+    this._refreshSoon();
+  }
+
+  async _onSetHeatpumpOnoff(value) {
+    const on = Boolean(value);
+    const mode = this.getCapabilityValue('thermostat_mode');
+    const newMode = on ? (mode === 'off' ? 'heat' : mode) : 'off';
+    this.log(`Command: heat pump on/off -> ${on} (mode ${newMode})`);
+    await this.client.setMode(this.deviceId, newMode);
+    await this._commit('onoff', on);
+    await this._commit('thermostat_mode', newMode);
+    if (!on) await this._commit('onoff.zone', false);
     this._refreshSoon();
   }
 
