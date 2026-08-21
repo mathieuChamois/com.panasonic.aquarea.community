@@ -230,11 +230,11 @@
       "insights": true,
       "insightsTitleTrue": {
         "en": "Holiday mode on",
-        "fr": "Mode vacances actif"
+        "fr": "Mode vacances activé"
       },
       "insightsTitleFalse": {
         "en": "Holiday mode off",
-        "fr": "Mode vacances inactif"
+        "fr": "Mode vacances désactivé"
       },
       "icon": "/assets/capabilities/holiday_mode.svg"
     },
@@ -478,12 +478,12 @@
       {
         "id": "capability_is_true",
         "title": {
-          "en": "Aquarea [[capability]] is active",
-          "fr": "Aquarea [[capability]] est actif"
+          "en": "Aquarea [[capability]] is on",
+          "fr": "Aquarea [[capability]] est activé"
         },
         "titleFormatted": {
-          "en": "[[device]]: [[capability]] is active",
-          "fr": "[[device]] : [[capability]] est actif"
+          "en": "[[device]]: [[capability]] is on",
+          "fr": "[[device]] : [[capability]] est activé"
         },
         "args": [
           {
@@ -781,14 +781,14 @@
                 "id": "on",
                 "title": {
                   "en": "On",
-                  "fr": "Actif"
+                  "fr": "Activé"
                 }
               },
               {
                 "id": "off",
                 "title": {
                   "en": "Off",
-                  "fr": "Inactif"
+                  "fr": "Désactivé"
                 }
               }
             ]
