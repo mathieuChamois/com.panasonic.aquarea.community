@@ -37,5 +37,8 @@
   },
   "1.1.4": {
     "en": "allowed all device type from confort cloud and add DHW mode"
+  },
+  "1.1.5": {
+    "en": "align with new official app version"
   }
 }
