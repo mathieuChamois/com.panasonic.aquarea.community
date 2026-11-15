@@ -44,5 +44,8 @@
   "1.1.6": {
     "en": "Reduce app size (development files were included by mistake), add a timeout on Aquarea Home requests, rename \"Min\" mode to \"Night\"",
     "fr": "Réduction de la taille de l'app (fichiers de développement inclus par erreur), ajout d'un délai d'expiration sur les requêtes Aquarea Home, mode \"Min\" renommé en \"Nuit\""
+  },
+  "1.1.7": {
+    "en": "decrease app disk usage and change min to night"
   }
 }
