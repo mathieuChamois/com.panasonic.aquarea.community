@@ -40,5 +40,9 @@
   },
   "1.1.5": {
     "en": "align with new official app version"
+  },
+  "1.1.6": {
+    "en": "Reduce app size: remove development files accidentally included in the package",
+    "fr": "Réduction de la taille de l'app : suppression de fichiers de développement inclus par erreur"
   }
 }
