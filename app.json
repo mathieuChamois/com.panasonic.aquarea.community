@@ -430,8 +430,8 @@
         {
           "id": "night",
           "title": {
-            "en": "Min",
-            "fr": "Min"
+            "en": "Night",
+            "fr": "Nuit"
           }
         }
       ]
@@ -825,8 +825,8 @@
               {
                 "id": "night",
                 "title": {
-                  "en": "Min",
-                  "fr": "Min"
+                  "en": "Night",
+                  "fr": "Nuit"
                 }
               },
               {
