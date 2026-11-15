@@ -1,0 +1,7 @@
+sources/
+scripts/
+aquarea.jpg
+resize.py
+.idea/
+.DS_Store
+**/.DS_Store
