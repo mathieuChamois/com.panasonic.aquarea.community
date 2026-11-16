@@ -43,6 +43,18 @@ class AquareaApp extends Homey.App {
       set_zone_setpoint: ({ device, value }) => (
         device.triggerCapabilityListener('target_temperature.zone', Number(value))
       ),
+      set_tank_onoff: ({ device, state }) => device.triggerCapabilityListener('onoff.tank', state === 'on'),
+      set_tank_setpoint: ({ device, value }) => {
+        // La consigne ballon est portee par target_temperature quand un ballon est present.
+        const cap = device._layout && device._layout.tankSetpointCap;
+        if (!cap || !device.hasCapability(cap)) throw new Error('No DHW tank on this device');
+        // On borne a la plage reelle du ballon remontee par Panasonic (cf. setCapabilityOptions).
+        const { min, max } = device.getCapabilityOptions(cap) || {};
+        let target = Number(value);
+        if (typeof min === 'number') target = Math.max(min, target);
+        if (typeof max === 'number') target = Math.min(max, target);
+        return device.triggerCapabilityListener(cap, target);
+      },
       set_quiet_mode: ({ device, mode }) => device.triggerCapabilityListener('quiet_mode', mode),
       set_powerful_mode: ({ device, mode }) => device.triggerCapabilityListener('powerful_mode', mode),
       set_holiday_mode: ({ device, state }) => device.triggerCapabilityListener('holiday_mode', state === 'on'),

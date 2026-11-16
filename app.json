@@ -489,12 +489,19 @@
           {
             "name": "device",
             "type": "device",
-            "filter": "capabilities=pump_running|defrost_active|force_dhw|force_heater|bivalent_active|electric_anode|holiday_mode|convector_flap"
+            "filter": "capabilities=onoff.tank|pump_running|defrost_active|force_dhw|force_heater|bivalent_active|electric_anode|holiday_mode|convector_flap"
           },
           {
             "name": "capability",
             "type": "dropdown",
             "values": [
+              {
+                "id": "onoff.tank",
+                "title": {
+                  "en": "Tank (DHW)",
+                  "fr": "Ballon (ECS)"
+                }
+              },
               {
                 "id": "pump_running",
                 "title": {
@@ -649,6 +656,73 @@
             },
             "min": -5,
             "max": 60,
+            "step": 1
+          }
+        ]
+      },
+      {
+        "id": "set_tank_onoff",
+        "title": {
+          "en": "Turn tank (DHW) [[state]]",
+          "fr": "[[state]] le ballon (ECS)"
+        },
+        "titleFormatted": {
+          "en": "Turn [[device]] tank (DHW) [[state]]",
+          "fr": "[[state]] le ballon (ECS) de [[device]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=onoff.tank"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "on",
+                  "fr": "Allumer"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "off",
+                  "fr": "Éteindre"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_tank_setpoint",
+        "title": {
+          "en": "Set tank (DHW) setpoint to [[value]] °C",
+          "fr": "Régler la consigne du ballon (ECS) sur [[value]] °C"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] tank (DHW) setpoint to [[value]] °C",
+          "fr": "Régler la consigne du ballon (ECS) de [[device]] sur [[value]] °C"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=onoff.tank"
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Temperature",
+              "fr": "Température"
+            },
+            "min": 30,
+            "max": 75,
             "step": 1
           }
         ]
