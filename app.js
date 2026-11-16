@@ -55,6 +55,7 @@ class AquareaApp extends Homey.App {
         if (typeof max === 'number') target = Math.min(max, target);
         return device.triggerCapabilityListener(cap, target);
       },
+      set_force_dhw: ({ device, state }) => device.triggerCapabilityListener('force_dhw', state === 'on'),
       set_quiet_mode: ({ device, mode }) => device.triggerCapabilityListener('quiet_mode', mode),
       set_powerful_mode: ({ device, mode }) => device.triggerCapabilityListener('powerful_mode', mode),
       set_holiday_mode: ({ device, state }) => device.triggerCapabilityListener('holiday_mode', state === 'on'),

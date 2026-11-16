@@ -49,7 +49,7 @@
     "en": "decrease app disk usage and change min to night"
   },
   "1.1.8": {
-    "en": "New flow cards for the hot water tank (DHW): turn on/off, set setpoint, and \"tank is on\" condition",
-    "fr": "Nouvelles cartes flow pour le ballon (ECS) : allumer/éteindre, régler la consigne, et condition \"ballon activé\""
+    "en": "New flow cards for the hot water tank (DHW): turn on/off, set setpoint, force hot water, and \"tank is on\" condition",
+    "fr": "Nouvelles cartes flow pour le ballon (ECS) : allumer/éteindre, régler la consigne, forcer l'eau chaude, et condition \"ballon activé\""
   }
 }

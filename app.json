@@ -728,6 +728,48 @@
         ]
       },
       {
+        "id": "set_force_dhw",
+        "title": {
+          "en": "Turn forced hot water [[state]]",
+          "fr": "[[state]] l'eau chaude forcée"
+        },
+        "titleFormatted": {
+          "en": "Turn [[device]] forced hot water [[state]]",
+          "fr": "[[state]] l'eau chaude forcée de [[device]]"
+        },
+        "hint": {
+          "en": "Heats the hot water tank immediately, regardless of its setpoint and schedule.",
+          "fr": "Chauffe immédiatement le ballon d'eau chaude, quels que soient sa consigne et sa programmation."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=force_dhw"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "on",
+                  "fr": "Activer"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "off",
+                  "fr": "Désactiver"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "set_quiet_mode",
         "title": {
           "en": "Set quiet mode to [[mode]]",

@@ -40,6 +40,8 @@ const COMMAND_HANDLERS = {
   'quiet_mode': '_onSetQuietMode',
   'powerful_mode': '_onSetPowerfulMode',
   'holiday_mode': '_onSetHolidayMode',
+  // force_dhw reste en lecture seule dans l'UI (setable: false) : il n'est pilote que par la carte flow.
+  'force_dhw': '_onSetForceDhw',
 };
 
 class AquareaDevice extends Homey.Device {
@@ -763,6 +765,14 @@ class AquareaDevice extends Homey.Device {
     this.log(`Command: holiday mode -> ${on}`);
     await this.client.setHolidayMode(this.deviceId, on);
     await this._commit('holiday_mode', on);
+    this._refreshSoon();
+  }
+
+  async _onSetForceDhw(value) {
+    const on = Boolean(value);
+    this.log(`Command: force DHW -> ${on}`);
+    await this.client.setForceDhw(this.deviceId, on);
+    await this._commit('force_dhw', on);
     this._refreshSoon();
   }
 
