@@ -1,7 +1,11 @@
 {
   "error": {
     "missing_credentials": "Identifiants manquants. Supprimez et re-appairez l'appareil.",
-    "connection_failed": "Connexion Aquarea impossible : {message}"
+    "connection_failed": "Connexion Aquarea impossible : {message}",
+    "pair_credentials_required": "E-mail et mot de passe requis.",
+    "pair_session_invalid": "Session d'appairage invalide, reconnectez-vous.",
+    "pair_no_heatpump": "Aucune pompe a chaleur trouvee sur ce compte Panasonic. Verifiez que la PAC est rattachee a ce compte (ou partagee avec lui) dans l'application Panasonic.",
+    "pair_no_convector": "Aucun convecteur Aquarea Home trouve sur ce compte."
   },
   "info": {
     "yes": "Oui",

@@ -23,7 +23,7 @@ class AquareaConvectorDriver extends Homey.Driver {
       const password = data.password || '';
 
       if (!email || !password) {
-        throw new Error('E-mail et mot de passe requis.');
+        throw new Error(this.homey.__('error.pair_credentials_required'));
       }
 
       client = new AquareaHomeClient({
@@ -45,13 +45,13 @@ class AquareaConvectorDriver extends Homey.Driver {
     });
     session.setHandler('list_devices', async () => {
       if (!client) {
-        throw new Error('Session de pairing invalide : reconnectez-vous.');
+        throw new Error(this.homey.__('error.pair_session_invalid'));
       }
 
       const devices = await client.getDevices();
 
       if (!devices.length) {
-        throw new Error('Aucun convecteur Aquarea Home trouvé sur ce compte.');
+        throw new Error(this.homey.__('error.pair_no_convector'));
       }
 
       const savedSession = client.exportSession();

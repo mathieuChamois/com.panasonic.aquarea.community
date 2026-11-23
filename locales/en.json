@@ -1,7 +1,11 @@
 {
   "error": {
     "missing_credentials": "Missing credentials. Please remove and re-pair the device.",
-    "connection_failed": "Cannot connect to Aquarea: {message}"
+    "connection_failed": "Cannot connect to Aquarea: {message}",
+    "pair_credentials_required": "E-mail and password are required.",
+    "pair_session_invalid": "Invalid pairing session, please sign in again.",
+    "pair_no_heatpump": "No heat pump found on this Panasonic account. Check that the heat pump is linked to this account (or shared with it) in the Panasonic app.",
+    "pair_no_convector": "No Aquarea Home convector found on this account."
   },
   "info": {
     "yes": "Yes",

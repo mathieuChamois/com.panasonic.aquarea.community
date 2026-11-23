@@ -31,7 +31,7 @@ class AquareaDriver extends Homey.Driver {
       const password = data.password || '';
 
       if (!username || !password) {
-        throw new Error('E-mail et mot de passe requis.');
+        throw new Error(this.homey.__('error.pair_credentials_required'));
       }
 
       client = new AquareaClient({
@@ -58,13 +58,13 @@ class AquareaDriver extends Homey.Driver {
     // Etape 2 : lister les equipements a ajouter.
     session.setHandler('list_devices', async () => {
       if (!credentials.username || !client) {
-        throw new Error('Session de pairing invalide : reconnectez-vous.');
+        throw new Error(this.homey.__('error.pair_session_invalid'));
       }
 
       const devices = await client.getDevices();
 
       if (!devices.length) {
-        throw new Error('Aucun appareil Comfort Cloud trouve sur ce compte.');
+        throw new Error(this.homey.__('error.pair_no_heatpump'));
       }
 
       // Session (tokens + clientId + cookies) reutilisable par le device pour
