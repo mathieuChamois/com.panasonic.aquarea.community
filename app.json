@@ -495,11 +495,19 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=onoff.tank|pump_running|defrost_active|force_dhw|force_heater|bivalent_active|electric_anode|holiday_mode|convector_flap"
           },
           {
             "name": "capability",
+            "title": {
+              "en": "Property",
+              "fr": "Propriété"
+            },
             "type": "dropdown",
             "values": [
               {
@@ -582,11 +590,19 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=operation_direction|special_status|quiet_mode|powerful_mode|convector_fan_speed"
           },
           {
             "name": "capability",
+            "title": {
+              "en": "Property",
+              "fr": "Propriété"
+            },
             "type": "dropdown",
             "values": [
               {
@@ -628,6 +644,10 @@
           },
           {
             "name": "value",
+            "title": {
+              "en": "Value",
+              "fr": "Valeur"
+            },
             "type": "text",
             "placeholder": {
               "en": "Value",
@@ -651,6 +671,10 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=target_temperature.zone"
           },
@@ -680,11 +704,19 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=onoff.tank"
           },
           {
             "name": "state",
+            "title": {
+              "en": "State",
+              "fr": "État"
+            },
             "type": "dropdown",
             "values": [
               {
@@ -718,6 +750,10 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=onoff.tank"
           },
@@ -751,11 +787,19 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=force_dhw"
           },
           {
             "name": "state",
+            "title": {
+              "en": "State",
+              "fr": "État"
+            },
             "type": "dropdown",
             "values": [
               {
@@ -789,11 +833,19 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=quiet_mode"
           },
           {
             "name": "mode",
+            "title": {
+              "en": "Mode",
+              "fr": "Mode"
+            },
             "type": "dropdown",
             "values": [
               {
@@ -841,11 +893,19 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=powerful_mode"
           },
           {
             "name": "mode",
+            "title": {
+              "en": "Mode",
+              "fr": "Mode"
+            },
             "type": "dropdown",
             "values": [
               {
@@ -893,11 +953,19 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=holiday_mode"
           },
           {
             "name": "state",
+            "title": {
+              "en": "State",
+              "fr": "État"
+            },
             "type": "dropdown",
             "values": [
               {
@@ -931,11 +999,19 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=convector_fan_speed"
           },
           {
             "name": "speed",
+            "title": {
+              "en": "Fan speed",
+              "fr": "Vitesse de ventilation"
+            },
             "type": "dropdown",
             "values": [
               {
@@ -976,11 +1052,19 @@
         "args": [
           {
             "name": "device",
+            "title": {
+              "en": "Device",
+              "fr": "Appareil"
+            },
             "type": "device",
             "filter": "capabilities=convector_flap"
           },
           {
             "name": "state",
+            "title": {
+              "en": "State",
+              "fr": "État"
+            },
             "type": "dropdown",
             "values": [
               {
